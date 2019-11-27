@@ -12,15 +12,34 @@ provider "azurerm" {
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = "p-ks-euw-aks"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  dns_prefix          = "exampleaks1"
+  name = "p-ks-euw-aks"
+  location = var.location
+  resource_group_name = var.resource_group_name
+  dns_prefix = "p-ks-euw-aks"
+  kubernetes_version = var.kubernetes_version
 
   default_node_pool {
-    name       = "default"
+    name = "pool01"
+    vm_size = "Standard_DS2_v2"
+    type = VirtualMachineScaleSets
+    enable_auto_scaling = true
+    min_count = 1
+    max_count = 10
     node_count = 3
-    vm_size    = "Standard_D2_v2"
+    vnet_subnet_id = something
+  }
+
+  linux_profile {
+    admin_username = "guvnor"
+    ssh_key
+  }
+
+  network_profile {
+    load_balancer_sku = standard
+    network_plugin = azure
+    service_cidr = "10.1.254.0/24"
+    dns_service_ip = "10.1.254.10"
+    docker_bridge_cidr = "172.17.0.1/16"
   }
 
   service_principal {
@@ -29,7 +48,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   tags = {
-    Environment = "Production"
+    deployed-by = "terraform"
+    timestamp = timestamp()
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags["timestamp"],
+    ]
   }
 }
 

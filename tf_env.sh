@@ -10,3 +10,4 @@
 # secrets in it!
 #
 export ARM_ACCESS_KEY=
+export TF_VAR_tenant_id=

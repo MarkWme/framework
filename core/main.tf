@@ -14,4 +14,5 @@ provider "azurerm" {
 module "core_infrastructure" {
     source = "./modules/core"
     location = var.location
+    tenant_id = var.tenant_id
 }
