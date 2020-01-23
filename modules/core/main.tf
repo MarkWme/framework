@@ -56,7 +56,7 @@ resource "azurerm_key_vault" "core-kv" {
 }
 
 resource "azurerm_container_registry" "core-acr" {
-  name                     = "pcreuwacr"
+  name                     = "pcreuwcore"
   resource_group_name      = azurerm_resource_group.core-resource-group.name
   location                 = var.location
   sku                      = "Basic"
