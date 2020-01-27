@@ -8,11 +8,38 @@ terraform {
 }
 
 provider "azurerm" {
-    version = "=1.38.0"
+    version = "=1.41.0"
 }
+
+provider "azuread" {
+    version = "=0.7.0"
+}
+
+data "azurerm_client_config" "current" {}
 
 module "core_infrastructure" {
     source = "./modules/core"
     location = var.location
-    tenant_id = var.tenant_id
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    service_principal_object_id = data.azurerm_client_config.current.object_id
+    ssh_file_location = var.ssh_file_location
+}
+
+module "aks_sp" {
+    source = "./modules/serviceprincipal"
+    service_principal_name = "p-sp-aks"
+    key_vault_id = module.core_infrastructure.key_vault_id
+}
+
+module "aks_cluster" {
+    source = "./modules/aks"
+    role = "aks"
+    instance_id = "1"
+    location = var.location
+    resource_group_name = module.core_infrastructure.resource_group_name
+    virtual_network_name = module.core_infrastructure.virtual_network_name
+    key_vault_id = module.core_infrastructure.key_vault_id
+    ssh_key = module.core_infrastructure.ssh_key_name
+    service_principal_client_id = module.aks_sp.service_principal_client_id
+    service_principal_client_secret = module.aks_sp.service_principal_client_secret
 }

@@ -1,3 +1,7 @@
+data "local_file" "ssh_key" {
+    filename = var.ssh_file_location
+}
+
 resource "azurerm_resource_group" "core-resource-group" {
   name     = "p-rg-euw-core"
   location = var.location
@@ -30,19 +34,33 @@ resource "azurerm_virtual_network" "core-virtual-network" {
     }
 }
 
-resource "azurerm_subnet" "core-subnet-1" {
-    name = "p-sn-euw-core-001"
-    resource_group_name = azurerm_resource_group.core-resource-group.name
-    virtual_network_name = azurerm_virtual_network.core-virtual-network.name
-    address_prefix = "10.0.1.0/24"
-}
-
 resource "azurerm_key_vault" "core-kv" {
   name = "p-kv-euw-core"
   location = var.location
   resource_group_name = azurerm_resource_group.core-resource-group.name
   tenant_id = var.tenant_id
   sku_name = "standard"
+
+  access_policy {
+    tenant_id = var.tenant_id
+    object_id = var.service_principal_object_id
+
+    key_permissions = [
+      "create",
+      "get",
+      "list",
+      "delete",
+      "update",
+    ]
+
+    secret_permissions = [
+      "set",
+      "get",
+      "list",
+      "delete",
+    ]
+  }
+
   tags = {
     deployed-by = "terraform"
     timestamp = timestamp()
@@ -53,6 +71,12 @@ resource "azurerm_key_vault" "core-kv" {
       tags["timestamp"],
     ]
   }
+}
+
+resource "azurerm_key_vault_secret" "ssh_key" {
+  name         = "ssh-public-key"
+  value        = data.local_file.ssh_key.content
+  key_vault_id = azurerm_key_vault.core-kv.id
 }
 
 resource "azurerm_container_registry" "core-acr" {
@@ -72,4 +96,24 @@ resource "azurerm_container_registry" "core-acr" {
       tags["timestamp"],
     ]
   }
+}
+
+output "key_vault_id" {
+  value = azurerm_key_vault.core-kv.id
+}
+
+output "resource_group_name" {
+  value = azurerm_resource_group.core-resource-group.name
+}
+
+output "azure_container_registry_name" {
+  value = azurerm_container_registry.core-acr.name
+}
+
+output "virtual_network_name" {
+  value = azurerm_virtual_network.core-virtual-network.name
+}
+
+output "ssh_key_name" {
+  value = azurerm_key_vault_secret.ssh_key.name
 }
