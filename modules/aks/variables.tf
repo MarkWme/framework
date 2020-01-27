@@ -10,15 +10,15 @@ variable "role" {
     description = "A role or other value that will be inserted into the resource name to help identify it"
 }
 
+variable "instance_id" {
+    type = string
+    description = "An instance ID that is used to name resources. This should be an incremental number, i.e. 1 for the first AKS cluster, 2 for the second and so on."
+}
+
 variable "resource_group_name" {
     type = string
     default = "p-rg-euw-core"
     description = "The resource group where the AKS cluster will be deployed"
-}
-
-variable "instance_id" {
-    type = string
-    description = "An instance ID that is used to name resources. This should be an incremental number, i.e. 1 for the first AKS cluster, 2 for the second and so on."
 }
 
 variable "kubernetes_version" {
@@ -42,10 +42,8 @@ variable "ssh_key" {
   description = "The name of the Key Vault secret that holds the SSH key to be used for the AKS nodes"
 }
 
-variable "service_principal_client_id" {
-  type = string
-}
-
-variable "service_principal_client_secret" {
-  type = string
+variable "enable_auto_scaling" {
+  type = bool
+  default = true
+  description = "Should auto scaling be enabled?"
 }

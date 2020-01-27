@@ -1,16 +1,12 @@
-data "azurerm_key_vault_secret" "aks_client_id" {
-  name      = var.service_principal_client_id
-  key_vault_id = var.key_vault_id
-}
-
-data "azurerm_key_vault_secret" "aks_client_secret" {
-  name      = var.service_principal_client_secret
-  key_vault_id = var.key_vault_id
-}
-
 data "azurerm_key_vault_secret" "ssh_key" {
   name      = var.ssh_key
   key_vault_id = var.key_vault_id
+}
+
+module "aks_sp" {
+    source = "../serviceprincipal"
+    service_principal_name = format("p-sp-euw-%s-%03s",var.role, var.instance_id)
+    key_vault_id = var.key_vault_id
 }
 
 resource "azurerm_subnet" "aks-subnet" {
@@ -31,7 +27,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name = "pool01"
     vm_size = "Standard_DS2_v2"
     type = "VirtualMachineScaleSets"
-    enable_auto_scaling = true
+    enable_auto_scaling = var.enable_auto_scaling
     min_count = 1
     max_count = 10
     node_count = 3
@@ -54,8 +50,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   service_principal {
-    client_id     = data.azurerm_key_vault_secret.aks_client_id.value
-    client_secret = data.azurerm_key_vault_secret.aks_client_secret.value
+    client_id     = module.aks_sp.client_id
+    client_secret = module.aks_sp.client_secret
   }
 
   tags = {

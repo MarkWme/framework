@@ -25,12 +25,6 @@ module "core_infrastructure" {
     ssh_file_location = var.ssh_file_location
 }
 
-module "aks_sp" {
-    source = "./modules/serviceprincipal"
-    service_principal_name = "p-sp-aks"
-    key_vault_id = module.core_infrastructure.key_vault_id
-}
-
 module "aks_cluster" {
     source = "./modules/aks"
     role = "aks"
@@ -40,6 +34,4 @@ module "aks_cluster" {
     virtual_network_name = module.core_infrastructure.virtual_network_name
     key_vault_id = module.core_infrastructure.key_vault_id
     ssh_key = module.core_infrastructure.ssh_key_name
-    service_principal_client_id = module.aks_sp.service_principal_client_id
-    service_principal_client_secret = module.aks_sp.service_principal_client_secret
 }

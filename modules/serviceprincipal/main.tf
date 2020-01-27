@@ -28,10 +28,18 @@ resource "azurerm_key_vault_secret" "service_principal_client_secret" {
   key_vault_id = var.key_vault_id
 }
 
-output "service_principal_client_id" {
+output "client_id" {
+  value = azuread_service_principal.service_principal.application_id
+}
+
+output "client_secret" {
+  value = random_password.password.result
+}
+
+output "client_id_name" {
   value = format("%s-client-id", var.service_principal_name)
 }
 
-output "service_principal_client_secret" {
+output "client_secret_name" {
   value = format("%s-client-secret", var.service_principal_name)
 }
