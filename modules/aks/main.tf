@@ -66,6 +66,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   lifecycle {
     ignore_changes = [
       tags["timestamp"],
+      default_node_pool.0.node_count # Prevent K8s autoscaling changes from being modified by Terraform
     ]
   }
 }
