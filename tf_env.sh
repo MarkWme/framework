@@ -14,13 +14,6 @@
 #
 export ARM_ACCESS_KEY=
 #
-# Details of the service principal that Terraform will run as
-#
-export ARM_CLIENT_ID=
-export ARM_CLIENT_SECRET=
-export ARM_SUBSCRIPTION_ID=
-export ARM_TENANT_ID=
-#
 # Set these to enable debug logging if required
 #
 export TF_LOG=
