@@ -26,7 +26,9 @@ The access key should be stored in an environment variable named `ARM_ACCESS_KEY
 
 The details of the storage account need to be provided to Terraform via the `terraform` block. You'll find this at the top of the `main.tf` file in the root of this repository. The values required are as follows:
 
-| storage_account_name | Names of the Azure Storage Account |
+| Value | Description |
+| --- | --- |
+| storage_account_name | Name of the Azure Storage Account |
 | container_name | Name of the Blob container where the state will be stored |
 | key | Name of the Blob (file) that will hold the state information |
 
