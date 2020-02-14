@@ -84,7 +84,7 @@ resource "azurerm_container_registry" "core-acr" {
   resource_group_name      = azurerm_resource_group.core-resource-group.name
   location                 = var.location
   sku                      = "Basic"
-  admin_enabled            = false
+  admin_enabled            = true
 
   tags = {
     deployed-by = "terraform"

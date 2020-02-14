@@ -23,6 +23,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix = format("p-ks-euw-%s-%03s", var.role, var.instance_id)
   kubernetes_version = var.kubernetes_version
 
+  role_based_access_control {
+    enabled = true
+  }
   default_node_pool {
     name = "pool01"
     vm_size = "Standard_DS2_v2"
