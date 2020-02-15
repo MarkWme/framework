@@ -86,6 +86,146 @@ resource "azurerm_firewall" "core-firewall" {
   }
 }
 
+resource "azurerm_subnet" "core-bastion-subnet" {
+  name = "AzureBastionSubnet"
+  resource_group_name = azurerm_resource_group.core-resource-group.name
+  virtual_network_name = azurerm_virtual_network.core-virtual-network.name
+  address_prefix = "10.0.0.64/26"
+}
+
+resource "azurerm_public_ip" "core-bastion-pip" {
+  name                = "p-ip-euw-corebastionip"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.core-resource-group.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  tags = {
+    deployed-by = "terraform"
+    timestamp = timestamp()
+    description = "Public IP address for Azure Bastion"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags["timestamp"],
+    ]
+  }
+}
+
+resource "azurerm_bastion_host" "core-bastion" {
+  name                = "p-bh-euw-core"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.core-resource-group.name
+
+  ip_configuration {
+    name                 = "corebastionconfig"
+    subnet_id            = azurerm_subnet.core-bastion-subnet.id
+    public_ip_address_id = azurerm_public_ip.core-bastion-pip.id
+  }
+}
+
+resource "azurerm_subnet" "core-jump-subnet" {
+  name = "p-sn-euw-core-jump"
+  resource_group_name = azurerm_resource_group.core-resource-group.name
+  virtual_network_name = azurerm_virtual_network.core-virtual-network.name
+  address_prefix = "10.0.0.128/26"
+}
+
+resource "azurerm_network_security_group" "core-jump-vm-nsg" {
+  name                = "p-sg-euw-core-jump-vm"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.core-resource-group.name
+}
+
+resource "azurerm_network_security_rule" "core-jump-vm-ssh-rule" {
+  name                        = "p-sg-euw-core-jump-ssh-rule"
+  resource_group_name         = azurerm_resource_group.core-resource-group.name
+  network_security_group_name = azurerm_network_security_group.core-jump-vm-nsg.name
+  priority                    = 100
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "22"
+  source_address_prefix       = "*"
+  destination_address_prefix  = "*"
+}
+
+resource "azurerm_subnet_network_security_group_association" "core-jump-nsg-ssh" {
+  subnet_id                 = azurerm_subnet.core-jump-subnet.id
+  network_security_group_id = azurerm_network_security_group.core-jump-vm-nsg.id
+}
+
+resource "azurerm_public_ip" "core-jump-vm-pip" {
+  name                         = "p-ip-euw-linuxbastion-pip"
+  location                     = var.location
+  resource_group_name          = azurerm_resource_group.core-resource-group.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_network_interface" "core-jump-vm-nic" {
+  name                = "p-ni-euw-linuxbastion-nic"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.core-resource-group.name
+
+  ip_configuration {
+    name                          = "p-ip-euw-linuxbastion-ip"
+    subnet_id                     = azurerm_subnet.core-jump-subnet.id
+    public_ip_address_id          = azurerm_public_ip.core-jump-vm-pip.id
+    private_ip_address_allocation = "dynamic"
+  }
+}
+
+resource "azurerm_virtual_machine" "core-linux-bastion" {
+  name                             = "p-vl-euw-linuxbastion"
+  location                         = var.location
+  resource_group_name              = azurerm_resource_group.core-resource-group.name
+  vm_size                          = "Standard_DS1_v2"
+  delete_os_disk_on_termination    = true
+  delete_data_disks_on_termination = true
+  network_interface_ids            = [azurerm_network_interface.core-jump-vm-nic.id]
+
+  storage_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
+    version   = "latest"
+  }
+
+  storage_os_disk {
+    name              = "p-os-euw-linuxbastion-disk0"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
+  }
+
+  os_profile {
+    computer_name  = "p-vl-euw-linuxbastion"
+    admin_username = "guvnor"
+  }
+
+  os_profile_linux_config {
+    disable_password_authentication = true
+
+    ssh_keys {
+      key_data = data.local_file.ssh_key.content
+      path     = "/home/guvnor/.ssh/authorized_keys"
+    }
+  }
+}
+
+resource "azurerm_virtual_machine_extension" "core-linux-bastion-msi" {
+  name                 = "p-vx-euw-linuxbastion-msi"
+  location             = var.location
+  resource_group_name  = azurerm_resource_group.core-resource-group.name
+  publisher            = "Microsoft.ManagedIdentity"
+  type                 = "ManagedIdentityExtensionForLinux"
+  type_handler_version = "1.0"
+  virtual_machine_name = azurerm_virtual_machine.core-linux-bastion.name
+}
+
+
 resource "azurerm_key_vault" "core-kv" {
   name = "p-kv-euw-core"
   location = var.location

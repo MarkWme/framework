@@ -37,6 +37,7 @@ resource "azurerm_virtual_network_peering" "peer-to-private" {
   resource_group_name       = var.core_resource_group_name
   virtual_network_name      = var.core_network_name
   remote_virtual_network_id = azurerm_virtual_network.private-aks-virtual-network.id
+  allow_virtual_network_access = true
 }
 
 resource "azurerm_virtual_network_peering" "peer-to-core" {
@@ -44,6 +45,7 @@ resource "azurerm_virtual_network_peering" "peer-to-core" {
   resource_group_name       = azurerm_resource_group.private-aks-resource-group.name
   virtual_network_name      = azurerm_virtual_network.private-aks-virtual-network.name
   remote_virtual_network_id = var.core_network_id
+  allow_virtual_network_access = true
 }
 
 module "aks_private_cluster" {
