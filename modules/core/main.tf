@@ -34,6 +34,33 @@ resource "azurerm_virtual_network" "core-virtual-network" {
     }
 }
 
+resource "azurerm_subnet" "core-subnet" {
+    name = "AzureFirewallSubnet"
+    resource_group_name = azurerm_resource_group.core-resource-group.name
+    virtual_network_name = azurerm_virtual_network.core-virtual-network.name
+    address_prefix = "10.0.0.0/26"
+}
+
+resource "azurerm_public_ip" "core-firewall-pip" {
+  name                = "p-ip-euw-corefwip"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.core-resource-group.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_firewall" "core-firewall" {
+  name                = "p-fw-euw-core"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.core-resource-group.name
+
+  ip_configuration {
+    name                 = "corefwconfig"
+    subnet_id            = azurerm_subnet.core-subnet.id
+    public_ip_address_id = azurerm_public_ip.core-firewall-pip.id
+  }
+}
+
 resource "azurerm_key_vault" "core-kv" {
   name = "p-kv-euw-core"
   location = var.location
