@@ -8,6 +8,7 @@ resource "azurerm_resource_group" "core-resource-group" {
    tags = {
     deployed-by = "terraform"
     timestamp = timestamp()
+    description = "Resource group for core network, firewall and shared services"
   }
 
   lifecycle {
@@ -25,6 +26,7 @@ resource "azurerm_virtual_network" "core-virtual-network" {
     tags = {
         deployed-by = "terraform"
         timestamp = timestamp()
+        description = "Virtual Network"
     }
 
     lifecycle {
@@ -35,10 +37,21 @@ resource "azurerm_virtual_network" "core-virtual-network" {
 }
 
 resource "azurerm_subnet" "core-subnet" {
-    name = "AzureFirewallSubnet"
-    resource_group_name = azurerm_resource_group.core-resource-group.name
-    virtual_network_name = azurerm_virtual_network.core-virtual-network.name
-    address_prefix = "10.0.0.0/26"
+  name = "AzureFirewallSubnet"
+  resource_group_name = azurerm_resource_group.core-resource-group.name
+  virtual_network_name = azurerm_virtual_network.core-virtual-network.name
+  address_prefix = "10.0.0.0/26"
+  tags = {
+    deployed-by = "terraform"
+    timestamp = timestamp()
+    description = "Subnet for Azure Firewall"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags["timestamp"],
+    ]
+  }
 }
 
 resource "azurerm_public_ip" "core-firewall-pip" {
@@ -47,6 +60,17 @@ resource "azurerm_public_ip" "core-firewall-pip" {
   resource_group_name = azurerm_resource_group.core-resource-group.name
   allocation_method   = "Static"
   sku                 = "Standard"
+  tags = {
+    deployed-by = "terraform"
+    timestamp = timestamp()
+    description = "Public IP address for Azure Firewall"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags["timestamp"],
+    ]
+  }
 }
 
 resource "azurerm_firewall" "core-firewall" {
@@ -58,6 +82,18 @@ resource "azurerm_firewall" "core-firewall" {
     name                 = "corefwconfig"
     subnet_id            = azurerm_subnet.core-subnet.id
     public_ip_address_id = azurerm_public_ip.core-firewall-pip.id
+  }
+
+  tags = {
+    deployed-by = "terraform"
+    timestamp = timestamp()
+    description = "Azure Firewall"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags["timestamp"],
+    ]
   }
 }
 
@@ -91,6 +127,7 @@ resource "azurerm_key_vault" "core-kv" {
   tags = {
     deployed-by = "terraform"
     timestamp = timestamp()
+    description = "Azure Key Vault"
   }
 
   lifecycle {
@@ -113,6 +150,25 @@ resource "azurerm_container_registry" "core-acr" {
   sku                      = "Basic"
   admin_enabled            = true
 
+  tags = {
+    deployed-by = "terraform"
+    timestamp = timestamp()
+    description = "Azure Container Registry"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags["timestamp"],
+    ]
+  }
+}
+
+resource "azurerm_log_analytics_workspace" "core-log-analytics" {
+  name                = "p-la-euw-core"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.core-resource-group.name
+  sku                 = "Standalone"
+  retention_in_days   = 30
   tags = {
     deployed-by = "terraform"
     timestamp = timestamp()
