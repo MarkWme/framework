@@ -33,5 +33,17 @@ module "aks_cluster" {
     resource_group_name = module.core_infrastructure.resource_group_name
     virtual_network_name = module.core_infrastructure.virtual_network_name
     key_vault_id = module.core_infrastructure.key_vault_id
-    ssh_key = module.core_infrastructure.ssh_key_name
+    ssh_key_name = module.core_infrastructure.ssh_key_name
+    log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
+}
+
+module "private_aks" {
+    source = "./modules/private-aks"
+    location = var.location
+    core_resource_group_name = module.core_infrastructure.resource_group_name
+    core_network_id = module.core_infrastructure.virtual_network_id
+    core_network_name = module.core_infrastructure.virtual_network_name
+    key_vault_id = module.core_infrastructure.key_vault_id
+    ssh_key_name = module.core_infrastructure.ssh_key_name
+    log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
 }

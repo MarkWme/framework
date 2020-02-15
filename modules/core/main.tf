@@ -186,6 +186,14 @@ output "virtual_network_name" {
   value = azurerm_virtual_network.core-virtual-network.name
 }
 
+output "virtual_network_id" {
+  value = azurerm_virtual_network.core-virtual-network.id
+}
+
+output "log_analytics_workspace_id" {
+  value = azurerm_log_analytics_workspace.core-log-analytics.id
+}
+
 output "ssh_key_name" {
   value = azurerm_key_vault_secret.ssh_key.name
 }

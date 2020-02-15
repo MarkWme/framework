@@ -1,5 +1,5 @@
 data "azurerm_key_vault_secret" "ssh_key" {
-  name      = var.ssh_key
+  name      = var.ssh_key_name
   key_vault_id = var.key_vault_id
 }
 
@@ -13,7 +13,7 @@ resource "azurerm_subnet" "aks-subnet" {
     name = format("p-sn-euw-core-%03s", var.instance_id)
     resource_group_name = var.resource_group_name
     virtual_network_name = var.virtual_network_name
-    address_prefix = format("10.0.%s.0/24", var.instance_id)
+    address_prefix = format("10.%s.%s.0/24", var.network_number, var.instance_id)
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
@@ -23,9 +23,20 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix = format("p-ks-euw-%s-%03s", var.role, var.instance_id)
   kubernetes_version = var.kubernetes_version
 
+  enable_pod_security_policy = var.enable_pod_security_policy
+  private_link_enabled = var.enable_private_link
+
   role_based_access_control {
-    enabled = true
+    enabled = var.enable_rbac
   }
+
+  addon_profile {
+    oms_agent {
+      enabled = true
+      log_analytics_workspace_id = var.log_analytics_workspace_id
+    }
+  }
+
   default_node_pool {
     name = "pool01"
     vm_size = "Standard_DS2_v2"
@@ -45,7 +56,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   network_profile {
-    load_balancer_sku = "standard"
+    load_balancer_sku = "Standard"
     network_plugin = "azure"
     service_cidr = "10.1.254.0/24"
     dns_service_ip = "10.1.254.10"

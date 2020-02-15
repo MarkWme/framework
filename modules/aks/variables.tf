@@ -32,12 +32,18 @@ variable "virtual_network_name" {
   description = "The name of the virtual network that AKS will be configured to use. A subnet will be created in this virtual network"
 }
 
+variable "network_number" {
+  type = string
+  default = "0"
+  description = "Network identifier - the second octet of the IP address - i.e. 10.x.0.0"
+}
+
 variable "key_vault_id" {
   type        = string
   description = "The name of the Key Vault instance where the SSH key, Client ID and Client Secret for the AKS nodes is stored. Just the name of the vault, not the URI"
 }
 
-variable "ssh_key" {
+variable "ssh_key_name" {
   type = string
   description = "The name of the Key Vault secret that holds the SSH key to be used for the AKS nodes"
 }
@@ -46,4 +52,28 @@ variable "enable_auto_scaling" {
   type = bool
   default = true
   description = "Should auto scaling be enabled?"
+}
+
+variable "enable_rbac" {
+  type = bool
+  default = true
+  description = "Should RBAC be enabled?"
+}
+
+variable "enable_pod_security_policy" {
+  type = bool
+  default = false
+  description = "Should pod security policies be enabled?"
+}
+
+variable "enable_private_link" {
+  type = bool
+  default = false
+  description = "Should private link be enabled?"
+}
+
+variable "log_analytics_workspace_id" {
+  type = string
+  default = false
+  description = "ID of the Log Analytics Workspace to connect to"
 }
