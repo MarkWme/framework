@@ -77,3 +77,9 @@ variable "log_analytics_workspace_id" {
   default = false
   description = "ID of the Log Analytics Workspace to connect to"
 }
+
+variable "route_table_id" {
+  type = string
+  default = "0"
+  description = "ID of the Route Table to assign to this subnet"
+}

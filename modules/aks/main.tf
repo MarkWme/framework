@@ -14,6 +14,7 @@ resource "azurerm_subnet" "aks-subnet" {
     resource_group_name = var.resource_group_name
     virtual_network_name = var.virtual_network_name
     address_prefix = format("10.%s.%s.0/24", var.network_number, var.instance_id)
+    route_table_id = var.route_table_id
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
@@ -87,4 +88,8 @@ output "client_certificate" {
 
 output "kube_config" {
   value = azurerm_kubernetes_cluster.aks.kube_config_raw
+}
+
+output "subnet_id" {
+  value = azurerm_subnet.aks-subnet.id
 }

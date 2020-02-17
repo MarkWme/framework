@@ -46,4 +46,5 @@ module "private_aks" {
     key_vault_id = module.core_infrastructure.key_vault_id
     ssh_key_name = module.core_infrastructure.ssh_key_name
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
+    core_firewall_name = module.core_infrastructure.firewall_name
 }

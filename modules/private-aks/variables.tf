@@ -15,6 +15,10 @@ variable "core_network_id" {
   description = "The id of the network to peer with"
 }
 
+variable "core_firewall_name" {
+  description = "Name of the Firewall resource in the core network"
+}
+
 variable "key_vault_id" {
   description = "ID of the Key Vault instance to use"
 }
