@@ -3,6 +3,11 @@ variable "location" {
   description = "The location for the deployments"
 }
 
+variable "resource_group_name" {
+  default     = "p-rg-euw-core"
+  description = "The resource group for the deployments"
+}
+
 variable "tenant_id" {
   description = "Tenant ID required for Key Vault creation. Should be the tenant that will be used to authenticate key vault requests."
 }

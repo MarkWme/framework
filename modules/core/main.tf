@@ -18,41 +18,15 @@ resource "azurerm_resource_group" "core-resource-group" {
   }
 }
 
-resource "azurerm_virtual_network" "core-virtual-network" {
-    name = "p-vn-euw-core"
-    location = var.location
-    resource_group_name = azurerm_resource_group.core-resource-group.name
-    address_space = ["10.0.0.0/16"]
-    tags = {
-        deployed-by = "terraform"
-        timestamp = timestamp()
-        description = "Virtual Network"
-    }
-
-    lifecycle {
-        ignore_changes = [
-            tags["timestamp"],
-        ]
-    }
-}
-
-resource "azurerm_subnet" "core-subnet" {
-  name = "AzureFirewallSubnet"
-  resource_group_name = azurerm_resource_group.core-resource-group.name
-  virtual_network_name = azurerm_virtual_network.core-virtual-network.name
-  address_prefix = "10.0.0.0/26"
-}
-
-resource "azurerm_public_ip" "core-firewall-pip" {
-  name                = "p-ip-euw-corefwip"
+resource "azurerm_log_analytics_workspace" "core-log-analytics" {
+  name                = "p-la-euw-core"
   location            = var.location
   resource_group_name = azurerm_resource_group.core-resource-group.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
+  sku                 = "Standalone"
+  retention_in_days   = 30
   tags = {
     deployed-by = "terraform"
     timestamp = timestamp()
-    description = "Public IP address for Azure Firewall"
   }
 
   lifecycle {
@@ -62,34 +36,20 @@ resource "azurerm_public_ip" "core-firewall-pip" {
   }
 }
 
-resource "azurerm_firewall" "core-firewall" {
-  name                = "p-fw-euw-core"
-  location            = var.location
+module "core_virtual_network" {
+  source = "../virtual-network"
+  location = var.location
   resource_group_name = azurerm_resource_group.core-resource-group.name
-
-  ip_configuration {
-    name                 = "corefwconfig"
-    subnet_id            = azurerm_subnet.core-subnet.id
-    public_ip_address_id = azurerm_public_ip.core-firewall-pip.id
-  }
-
-  tags = {
-    deployed-by = "terraform"
-    timestamp = timestamp()
-    description = "Azure Firewall"
-  }
-
-  lifecycle {
-    ignore_changes = [
-      tags["timestamp"],
-    ]
-  }
+  network_name = "p-vn-euw-core"
+  address_space = ["10.0.0.0/16"]
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.core-log-analytics.id
 }
 
+/*
 resource "azurerm_subnet" "core-bastion-subnet" {
   name = "AzureBastionSubnet"
   resource_group_name = azurerm_resource_group.core-resource-group.name
-  virtual_network_name = azurerm_virtual_network.core-virtual-network.name
+  virtual_network_name = module.core_virtual_network.virtual_network_name
   address_prefix = "10.0.0.64/26"
 }
 
@@ -123,11 +83,13 @@ resource "azurerm_bastion_host" "core-bastion" {
     public_ip_address_id = azurerm_public_ip.core-bastion-pip.id
   }
 }
+*/
 
+/*
 resource "azurerm_subnet" "core-jump-subnet" {
   name = "p-sn-euw-core-jump"
   resource_group_name = azurerm_resource_group.core-resource-group.name
-  virtual_network_name = azurerm_virtual_network.core-virtual-network.name
+  virtual_network_name = module.core_virtual_network.virtual_network_name
   address_prefix = "10.0.0.128/26"
   network_security_group_id = azurerm_network_security_group.core-jump-vm-nsg.id
 }
@@ -224,7 +186,7 @@ resource "azurerm_virtual_machine_extension" "core-linux-bastion-msi" {
   auto_upgrade_minor_version = true
   virtual_machine_id = azurerm_virtual_machine.core-linux-bastion.id
 }
-
+*/
 
 resource "azurerm_key_vault" "core-kv" {
   name = "p-kv-euw-core"
@@ -292,56 +254,6 @@ resource "azurerm_container_registry" "core-acr" {
   }
 }
 
-resource "azurerm_log_analytics_workspace" "core-log-analytics" {
-  name                = "p-la-euw-core"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.core-resource-group.name
-  sku                 = "Standalone"
-  retention_in_days   = 30
-  tags = {
-    deployed-by = "terraform"
-    timestamp = timestamp()
-  }
-
-  lifecycle {
-    ignore_changes = [
-      tags["timestamp"],
-    ]
-  }
-}
-
-resource "azurerm_monitor_diagnostic_setting" "log-analytics-firewall" {
-  name               = "log-analytics-firewall"
-  target_resource_id = azurerm_firewall.core-firewall.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.core-log-analytics.id
-
-  log {
-    category = "AzureFirewallApplicationRule"
-    enabled  = true
-
-    retention_policy {
-      enabled = false
-    }
-  }
-
-  log {
-    category = "AzureFirewallNetworkRule"
-    enabled  = true
-
-    retention_policy {
-      enabled = false
-    }
-  }
-
-  metric {
-    category = "AllMetrics"
-
-    retention_policy {
-      enabled = false
-    }
-  }
-}
-
 output "key_vault_id" {
   value = azurerm_key_vault.core-kv.id
 }
@@ -355,17 +267,17 @@ output "azure_container_registry_name" {
 }
 
 output "virtual_network_name" {
-  value = azurerm_virtual_network.core-virtual-network.name
+  value = module.core_virtual_network.virtual_network_name
 }
 
 output "virtual_network_id" {
-  value = azurerm_virtual_network.core-virtual-network.id
+  value = module.core_virtual_network.virtual_network_id
 }
-
+/*
 output "firewall_name" {
   value = azurerm_firewall.core-firewall.name
 }
-
+*/
 output "log_analytics_workspace_id" {
   value = azurerm_log_analytics_workspace.core-log-analytics.id
 }

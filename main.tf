@@ -24,7 +24,7 @@ module "core_infrastructure" {
     service_principal_object_id = data.azurerm_client_config.current.object_id
     ssh_file_location = var.ssh_file_location
 }
-
+ /*
 module "aks_cluster" {
     source = "./modules/aks"
     role = "aks"
@@ -36,7 +36,8 @@ module "aks_cluster" {
     ssh_key_name = module.core_infrastructure.ssh_key_name
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
 }
-
+*/
+ /*
 module "private_aks" {
     source = "./modules/private-aks"
     location = var.location
@@ -48,3 +49,4 @@ module "private_aks" {
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
     core_firewall_name = module.core_infrastructure.firewall_name
 }
+*/
