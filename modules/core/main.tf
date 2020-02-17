@@ -56,6 +56,17 @@ module "core_bastion_host" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.core-log-analytics.id
 }
 
+module "core_firewall" {
+  source = "../firewall"
+  name = "core"
+  location = var.location
+  firewall_resource_group_name = azurerm_resource_group.core-resource-group.name
+  subnet_resource_group_name = azurerm_resource_group.core-resource-group.name
+  virtual_network_name = module.core_virtual_network.virtual_network_name
+  address_prefix = "10.0.0.0/26"
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.core-log-analytics.id
+}
+
 /*
 resource "azurerm_subnet" "core-jump-subnet" {
   name = "p-sn-euw-core-jump"
