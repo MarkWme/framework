@@ -45,54 +45,16 @@ module "core_virtual_network" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.core-log-analytics.id
 }
 
-module "core-bastion-subnet" {
-  source = "../subnet"
-  resource_group_name = azurerm_resource_group.core-resource-group.name
-  virtual_network_name = module.core_virtual_network.virtual_network_name
-  subnet_name = "AzureBastionSubnet"
-  use_specific_name = true
-  address_prefix = "10.0.0.64/26"
-}
-
-/*
-resource "azurerm_subnet" "core-bastion-subnet" {
-  name = "AzureBastionSubnet"
-  resource_group_name = azurerm_resource_group.core-resource-group.name
+module "core_bastion_host" {
+  source = "../bastion"
+  name = "core"
+  location = var.location
+  bastion_resource_group_name = azurerm_resource_group.core-resource-group.name
+  subnet_resource_group_name = azurerm_resource_group.core-resource-group.name
   virtual_network_name = module.core_virtual_network.virtual_network_name
   address_prefix = "10.0.0.64/26"
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.core-log-analytics.id
 }
-
-resource "azurerm_public_ip" "core-bastion-pip" {
-  name                = "p-ip-euw-corebastionip"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.core-resource-group.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  tags = {
-    deployed-by = "terraform"
-    timestamp = timestamp()
-    description = "Public IP address for Azure Bastion"
-  }
-
-  lifecycle {
-    ignore_changes = [
-      tags["timestamp"],
-    ]
-  }
-}
-
-resource "azurerm_bastion_host" "core-bastion" {
-  name                = "p-bh-euw-core"
-  location            = var.location
-  resource_group_name = azurerm_resource_group.core-resource-group.name
-
-  ip_configuration {
-    name                 = "corebastionconfig"
-    subnet_id            = azurerm_subnet.core-bastion-subnet.id
-    public_ip_address_id = azurerm_public_ip.core-bastion-pip.id
-  }
-}
-*/
 
 /*
 resource "azurerm_subnet" "core-jump-subnet" {
