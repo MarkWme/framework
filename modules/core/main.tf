@@ -45,6 +45,15 @@ module "core_virtual_network" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.core-log-analytics.id
 }
 
+module "core-bastion-subnet" {
+  source = "../subnet"
+  resource_group_name = azurerm_resource_group.core-resource-group.name
+  virtual_network_name = module.core_virtual_network.virtual_network_name
+  subnet_name = "AzureBastionSubnet"
+  use_specific_name = true
+  address_prefix = "10.0.0.64/26"
+}
+
 /*
 resource "azurerm_subnet" "core-bastion-subnet" {
   name = "AzureBastionSubnet"
