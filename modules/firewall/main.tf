@@ -1,34 +1,20 @@
 locals {
-  name = format("p-fw-euw-%s", var.name)
+  name = format("%s-fw-%s-%s", var.environment, var.azure_region_code, var.name)
 }
 
-module "firewall-subnet" {
-  source = "../subnet"
-  resource_group_name = var.subnet_resource_group_name
-  virtual_network_name = var.virtual_network_name
-  subnet_name = "AzureFirewallSubnet"
-  use_specific_name = true
-  address_prefix = var.address_prefix
+resource "azurerm_subnet" "firewall_subnet" {
+    name = "AzureFirewallSubnet"
+    resource_group_name = var.subnet_resource_group_name
+    virtual_network_name = var.virtual_network_name
+    address_prefix = var.address_prefix
 }
 
-resource "azurerm_public_ip" "firewall-pip" {
-  name                = format("p-ip-euw-%s-firewall-ip", var.name)
+resource "azurerm_public_ip" "firewall_pip" {
+  name                = format("%s-ip-%s-%s-firewall-ip", var.environment, var.azure_region_code, var.name)
   location            = var.location
   resource_group_name = var.firewall_resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
-
-  tags = {
-    deployed-by = "terraform"
-    timestamp = timestamp()
-    description = format("Public IP address for Azure Firewall %s", local.name)
-  }
-
-  lifecycle {
-    ignore_changes = [
-      tags["timestamp"],
-    ]
-  }
 }
 
 resource "azurerm_firewall" "firewall" {
@@ -38,24 +24,12 @@ resource "azurerm_firewall" "firewall" {
 
   ip_configuration {
     name                 = format("%s-ip-config", local.name)
-    subnet_id            = module.firewall-subnet.subnet_id
-    public_ip_address_id = azurerm_public_ip.firewall-pip.id
-  }
-
-  tags = {
-    deployed-by = "terraform"
-    timestamp = timestamp()
-    description = "Azure Firewall"
-  }
-
-  lifecycle {
-    ignore_changes = [
-      tags["timestamp"],
-    ]
+    subnet_id            = azurerm_subnet.firewall_subnet.id
+    public_ip_address_id = azurerm_public_ip.firewall_pip.id
   }
 }
 
-resource "azurerm_monitor_diagnostic_setting" "log-analytics-firewall" {
+resource "azurerm_monitor_diagnostic_setting" "log_analytics_firewall" {
   count = var.enable_diagnostics ? 1 : 0
   name               = format("%s-diagnostics", local.name)
   target_resource_id = azurerm_firewall.firewall.id
@@ -86,4 +60,8 @@ resource "azurerm_monitor_diagnostic_setting" "log-analytics-firewall" {
       enabled = false
     }
   }
+}
+
+output "firewall_private_ip_address" {
+  value = azurerm_firewall.firewall.ip_configuration[0].private_ip_address
 }

@@ -1,18 +1,17 @@
 locals {
-  name = format("p-bh-euw-%s", var.name)
+  name = format("%s-bh-%s-%s", var.environment, var.azure_region_code, var.name)
 }
 
-module "bastion-subnet" {
-  source = "../subnet"
-  resource_group_name = var.subnet_resource_group_name
-  virtual_network_name = var.virtual_network_name
-  subnet_name = "AzureBastionSubnet"
-  use_specific_name = true
-  address_prefix = var.address_prefix
+resource "azurerm_subnet" "bastion_subnet" {
+    name = "AzureBastionSubnet"
+    resource_group_name = var.subnet_resource_group_name
+    virtual_network_name = var.virtual_network_name
+    address_prefix = var.address_prefix
 }
 
-resource "azurerm_public_ip" "bastion-pip" {
-  name                = format("p-ip-euw-%s-bastion-ip", var.name)
+
+resource "azurerm_public_ip" "bastion_pip" {
+  name                = format("%s-ip-%s-%s-bastion-ip", var.environment, var.azure_region_code, var.name)
   location            = var.location
   resource_group_name = var.bastion_resource_group_name
   allocation_method   = "Static"
@@ -37,12 +36,12 @@ resource "azurerm_bastion_host" "bastion" {
 
   ip_configuration {
     name                 = format("%s-ip-config", local.name)
-    subnet_id            = module.bastion-subnet.subnet_id
-    public_ip_address_id = azurerm_public_ip.bastion-pip.id
+    subnet_id            = azurerm_subnet.bastion_subnet.id
+    public_ip_address_id = azurerm_public_ip.bastion_pip.id
   }
 }
 
-resource "azurerm_monitor_diagnostic_setting" "log-analytics" {
+resource "azurerm_monitor_diagnostic_setting" "log_analytics" {
     count = var.enable_diagnostics ? 1 : 0
     name               = format("%s-diagnostics", local.name)
     target_resource_id = azurerm_bastion_host.bastion.id

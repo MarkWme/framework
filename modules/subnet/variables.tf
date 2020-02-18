@@ -15,9 +15,19 @@ variable "address_prefix" {
     description = "The address space of the subnet to be created"
 }
 
+variable "enable_route_table" {
+    default = false
+    description = "If this subnet will have a custom route table, set this to True and provide the route table ID variable"
+}
+
 variable "route_table_id" {
     default = null
     description = "If this subnet will have a custom route table provide the route table ID here"
+}
+
+variable "network_security_group_id" {
+    default = null
+    description = "If this subnet will have a network security group, provide the network security group ID here"
 }
 
 variable "use_specific_name" {

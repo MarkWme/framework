@@ -10,6 +10,14 @@ variable "location" {
     description = "The location for the deployments"
 }
 
+variable "azure_region_code" {
+  description = "A three character code used to indicate which region a resource is deployed to. Used as part of the resource name"
+}
+
+variable "environment" {
+  description = "This will be used to add a prefix to resources (d/t/p) to indicate if a resource is part of a dev, test or production environment"
+}
+
 variable "bastion_resource_group_name" {
     type = string
     default = "p-rg-euw-core"

@@ -21,20 +21,29 @@ variable "environment" {
 }
 
 variable "resource_group_name" {
-  default     = "p-rg-euw-core"
-  description = "The resource group for the deployments"
+  description = "The resource group where the subnet will be created"
 }
 
-variable "tenant_id" {
-  description = "Tenant ID required for Key Vault creation. Should be the tenant that will be used to authenticate key vault requests."
+variable "virtual_network_name" {
+  description = "The virtual network where the subnets will be created"
 }
 
-variable "service_principal_object_id" {
-  description = "Object ID of the service principal that will be granted access to key vault"
+variable "key_vault_id" {
+  type        = string
+  description = "The name of the Key Vault instance where the SSH public key is stored. Just the name of the vault, not the URI"
 }
 
-variable "ssh_file_location" {
-    type = string
-    default = "/home/mark/.ssh/id_rsa.pub"
-    description = "Locatin of your public SSH key file. This will be uploaded to Key Vault."
+variable "ssh_key_name" {
+  type = string
+  description = "The name of the Key Vault secret that holds the SSH public key to be used"
+}
+
+variable "enable_diagnostics" {
+    default = true
+    description = "Enables logging of virtual network diagnostic data to Log Analytics"
+}
+
+variable "log_analytics_workspace_id" {
+  default = null
+  description = "The ID of the Log Analytics instance to be used"
 }
