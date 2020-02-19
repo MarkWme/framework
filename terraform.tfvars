@@ -1,0 +1,6 @@
+name = "core"
+network_id = "0"
+aks_private_network_id = "1"
+azure_region = "westeurope"
+environment = "production"
+ssh_file_location = "/home/mark/.ssh/id_rsa.pub"

@@ -27,7 +27,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   name = format("%s-ks-%s-%s-%02s", var.environment, var.azure_region_code, var.name, var.instance_id)
   location = var.location
   resource_group_name = var.resource_group_name
-  dns_prefix = format("%s-ks-%s-%s-%03s", var.environment, var.azure_region_code, var.name, var.instance_id)
+  dns_prefix = format("%s-ks-%s-%s-%02s", var.environment, var.azure_region_code, var.name, var.instance_id)
   kubernetes_version = var.kubernetes_version
 
   enable_pod_security_policy = var.enable_pod_security_policy
@@ -65,8 +65,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   network_profile {
     load_balancer_sku = "Standard"
     network_plugin = "azure"
-    service_cidr = "10.1.254.0/24"
-    dns_service_ip = "10.1.254.10"
+    service_cidr = "10.250.0.0/16"
+    dns_service_ip = "10.250.0.10"
     docker_bridge_cidr = "172.17.0.1/16"
   }
 

@@ -1,12 +1,18 @@
 variable "name" {
     type = string
-    default     = "core"
+    default     = "coredev"
     description = "This will be used as part of the resource names"
 }
 
 variable "network_id" {
     type = string
-    default     = "0"
+    default     = "100"
+    description = "Defines the second octet of the network to be used - i.e. 10.x.0.0/16"
+}
+
+variable "aks_private_network_id" {
+    type = string
+    default     = "101"
     description = "Defines the second octet of the network to be used - i.e. 10.x.0.0/16"
 }
 
@@ -18,7 +24,7 @@ variable "azure_region" {
 
 variable "environment" {
     type = string
-    default = "production"
+    default = "development"
     description = "This will be used to add a prefix to resources (d/t/p) to indicate if a resource is part of a dev, test or production environment"
 }
 

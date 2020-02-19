@@ -69,7 +69,7 @@ module "private_aks" {
     source = "./modules/private-aks"
     name = "aks-private"
     instance_id = "1"
-    network_id = "1"
+    network_id = var.aks_private_network_id
     location = var.azure_region
     azure_region_code = local.azure_region_code
     environment = local.environment_code

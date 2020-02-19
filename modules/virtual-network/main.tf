@@ -22,7 +22,7 @@ resource "azurerm_virtual_network" "virtual-network" {
 
 resource "azurerm_virtual_network_peering" "peer-from-remote" {
     count = var.enable_peering ? 1 : 0
-    name                      = format("%s-peer-to%s", var.peer_with_network_name, var.network_name)
+    name                      = format("%s-peer-to-%s", var.peer_with_network_name, var.network_name)
     resource_group_name       = var.peer_with_network_resource_group
     virtual_network_name      = var.peer_with_network_name
     remote_virtual_network_id = azurerm_virtual_network.virtual-network.id
@@ -33,7 +33,7 @@ resource "azurerm_virtual_network_peering" "peer-from-remote" {
 
 resource "azurerm_virtual_network_peering" "peer-to-remote" {
     count = var.enable_peering ? 1 : 0
-    name                      = format("%s-peer-to%s", var.network_name, var.peer_with_network_name)
+    name                      = format("%s-peer-to-%s", var.network_name, var.peer_with_network_name)
     resource_group_name       = var.resource_group_name
     virtual_network_name      = azurerm_virtual_network.virtual-network.name
     remote_virtual_network_id = var.peer_with_network_id

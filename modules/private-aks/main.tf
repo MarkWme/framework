@@ -48,7 +48,7 @@ module "aks_private_cluster" {
     instance_id = var.instance_id
     location = var.location
     network_id = var.network_id
-    azure_region_code = var.location
+    azure_region_code = var.azure_region_code
     environment = var.environment
     resource_group_name = azurerm_resource_group.private_aks_resource_group.name
     virtual_network_name = module.private_aks_virtual_network.virtual_network_name
