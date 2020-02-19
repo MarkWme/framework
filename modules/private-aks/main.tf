@@ -120,3 +120,62 @@ resource "azurerm_firewall_network_rule_collection" "firewall_allow_ntp" {
     ]
   }
 }
+
+resource "azurerm_firewall_network_rule_collection" "firewall_azure_resources" {
+  name                = "aks-private-allow-azure-resources"
+  azure_firewall_name = var.firewall_name
+  resource_group_name = var.firewall_resource_group_name
+  priority            = 103
+  action              = "Allow"
+
+  rule {
+    name = "allow-azure-resources"
+
+    source_addresses = [
+      "*",
+    ]
+
+    destination_ports = [
+      "*",
+    ]
+
+    destination_addresses = [
+      "AzureContainerRegistry",
+      "MicrosoftContainerRegistry",
+      "AzureActiveDirectory",
+    ]
+
+    protocols = [
+      "Any",
+    ]
+  }
+}
+
+resource "azurerm_firewall_application_rule_collection" "firewall_container_registry_cdn" {
+  name                = "aks-private-allow-container-registry-cdn"
+  azure_firewall_name = var.firewall_name
+  resource_group_name = var.firewall_resource_group_name
+  priority            = 104
+  action              = "Allow"
+
+  rule {
+    name = "allow-cdn"
+
+    source_addresses = [
+      "*",
+    ]
+
+    target_fqdns = [
+      "*.cdn.mscr.io",
+    ]
+
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+    protocol {
+      port = "80"
+      type = "Http"
+    }
+  }
+}
