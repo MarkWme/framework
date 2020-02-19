@@ -49,29 +49,37 @@ module "private_network" {
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
 }
 
- /*
+
 module "aks_cluster" {
     source = "./modules/aks"
-    role = "aks"
+    name = "aks"
     instance_id = "1"
-    location = var.location
+    network_id = var.network_id
+    location = var.azure_region
+    azure_region_code = local.azure_region_code
+    environment = local.environment_code
     resource_group_name = module.core_infrastructure.resource_group_name
     virtual_network_name = module.core_infrastructure.virtual_network_name
     key_vault_id = module.core_infrastructure.key_vault_id
     ssh_key_name = module.core_infrastructure.ssh_key_name
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
 }
-*/
- /*
+
 module "private_aks" {
     source = "./modules/private-aks"
-    location = var.location
+    name = "aks-private"
+    instance_id = "1"
+    network_id = "1"
+    location = var.azure_region
+    azure_region_code = local.azure_region_code
+    environment = local.environment_code
     core_resource_group_name = module.core_infrastructure.resource_group_name
     core_network_id = module.core_infrastructure.virtual_network_id
     core_network_name = module.core_infrastructure.virtual_network_name
     key_vault_id = module.core_infrastructure.key_vault_id
     ssh_key_name = module.core_infrastructure.ssh_key_name
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
-    core_firewall_name = module.core_infrastructure.firewall_name
+    firewall_name = module.private_network.firewall_name
+    firewall_private_ip_address = module.private_network.firewall_private_ip_address
+    firewall_resource_group_name = module.core_infrastructure.resource_group_name
 }
-*/

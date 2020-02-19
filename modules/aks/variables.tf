@@ -4,10 +4,10 @@ variable "location" {
     description = "The location for the deployments"
 }
 
-variable "role" {
+variable "name" {
     type = string
     default = "aks"
-    description = "A role or other value that will be inserted into the resource name to help identify it"
+    description = "Used as part of the naming for the resources"
 }
 
 variable "instance_id" {
@@ -21,6 +21,14 @@ variable "resource_group_name" {
     description = "The resource group where the AKS cluster will be deployed"
 }
 
+variable "azure_region_code" {
+  description = "A three character code used to indicate which region a resource is deployed to. Used as part of the resource name"
+}
+
+variable "environment" {
+  description = "This will be used to add a prefix to resources (d/t/p) to indicate if a resource is part of a dev, test or production environment"
+}
+
 variable "kubernetes_version" {
     type = string
     default = "1.15.7" # Latest GA version of Kubernetes in AKS as at 27 Jan 2020
@@ -32,7 +40,7 @@ variable "virtual_network_name" {
   description = "The name of the virtual network that AKS will be configured to use. A subnet will be created in this virtual network"
 }
 
-variable "network_number" {
+variable "network_id" {
   type = string
   default = "0"
   description = "Network identifier - the second octet of the IP address - i.e. 10.x.0.0"
@@ -72,14 +80,35 @@ variable "enable_private_link" {
   description = "Should private link be enabled?"
 }
 
+variable "minimum_node_count" {
+  default = 1
+  description = "Minimum number of nodes in the scale set"
+}
+
+variable "maximum_node_count" {
+  default = 10
+  description = "Maximum number of nodes in the scale set"
+}
+
+variable "node_count" {
+  default = 3
+  description = "Number of nodes initially deployed in the scale set"
+}
+
 variable "log_analytics_workspace_id" {
   type = string
   default = false
   description = "ID of the Log Analytics Workspace to connect to"
 }
 
+variable "enable_route_table" {
+  type = bool
+  default = false
+  description = "Set this to true if a route table needs to be assigned to the subnet"
+}
+
 variable "route_table_id" {
   type = string
-  default = "0"
+  default = null
   description = "ID of the Route Table to assign to this subnet"
 }

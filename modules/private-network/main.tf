@@ -46,3 +46,7 @@ module "bastion_vm" {
 output "firewall_private_ip_address" {
   value = module.core_firewall.firewall_private_ip_address
 }
+
+output "firewall_name" {
+  value = module.core_firewall.firewall_name
+}

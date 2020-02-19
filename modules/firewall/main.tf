@@ -65,3 +65,7 @@ resource "azurerm_monitor_diagnostic_setting" "log_analytics_firewall" {
 output "firewall_private_ip_address" {
   value = azurerm_firewall.firewall.ip_configuration[0].private_ip_address
 }
+
+output "firewall_name" {
+  value = azurerm_firewall.firewall.name
+}
