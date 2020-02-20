@@ -167,8 +167,48 @@ resource "azurerm_firewall_application_rule_collection" "firewall_container_regi
 
     target_fqdns = [
       "*.cdn.mscr.io",
+      "*.docker.io",
+      "*.docker.com",
+      "dc.services.visualstudio.com",
+      "*.opinsights.azure.com",
+      "*.monitoring.azure.com",
+      "gov-prod-policy-data.trafficmanager.net",
+      "apt.dockerproject.org",
+      "nvidia.github.io",
     ]
 
+    protocol {
+      port = "443"
+      type = "Https"
+    }
+    protocol {
+      port = "80"
+      type = "Http"
+    }
+  }
+}
+
+resource "azurerm_firewall_application_rule_collection" "firewall_os_updates" {
+  name                = "aks-private-allow-os-updates"
+  azure_firewall_name = var.firewall_name
+  resource_group_name = var.firewall_resource_group_name
+  priority            = 105
+  action              = "Allow"
+
+  rule {
+    name = "allow-os-updates"
+
+    source_addresses = [
+      "*",
+    ]
+
+    target_fqdns = [
+      "download.opensuse.org",
+      "*.ubuntu.com",
+      "packages.microsoft.com",
+      "snapcraft.io",
+      "api.snapcraft.io",
+    ]
     protocol {
       port = "443"
       type = "Https"
