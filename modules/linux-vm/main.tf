@@ -48,7 +48,6 @@ resource "azurerm_network_interface" "virtual_machine_nic" {
   name                = format("%s-ni-%s-%s-nic", var.environment, var.azure_region_code, var.name)
   location            = var.location
   resource_group_name = var.resource_group_name
-  network_security_group_id = azurerm_network_security_group.virtual_machine_nsg.id
 
   ip_configuration {
     name                          = format("%s-ip-%s-%s-vm-ip-config", var.environment, var.azure_region_code, var.name)
@@ -58,49 +57,38 @@ resource "azurerm_network_interface" "virtual_machine_nic" {
   }
 }
 
-resource "azurerm_virtual_machine" "virtual_machine" {
+resource "azurerm_network_interface_security_group_association" "virtual_machine_nic_security_group" {
+  network_interface_id      = azurerm_network_interface.virtual_machine_nic.id
+  network_security_group_id = azurerm_network_security_group.virtual_machine_nsg.id
+}
+
+resource "azurerm_linux_virtual_machine" "virtual_machine" {
   name                             = format("%s-vl-%s-%s-vm", var.environment, var.azure_region_code, var.name)
   location                         = var.location
   resource_group_name              = var.resource_group_name
-  vm_size                          = "Standard_DS1_v2"
-  delete_os_disk_on_termination    = true
-  delete_data_disks_on_termination = true
+  size                             = "Standard_DS1_v2"
+  admin_username                   = "guvnor"
   network_interface_ids            = [azurerm_network_interface.virtual_machine_nic.id]
 
-  storage_image_reference {
+  admin_ssh_key {
+    username = "guvnor"
+    public_key = data.azurerm_key_vault_secret.ssh_key.value
+  }
+
+  source_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"
     sku       = "18.04-LTS"
     version   = "latest"
   }
 
-  storage_os_disk {
-    name              = format("%s-os-%s-%s-vm-disk0", var.environment, var.azure_region_code, var.name)
-    caching           = "ReadWrite"
-    create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
+  os_disk {
+    name                 = format("%s-os-%s-%s-vm-disk0", var.environment, var.azure_region_code, var.name)
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
   }
 
-  os_profile {
-    computer_name  = format("%s-vl-%s-%s-vm", var.environment, var.azure_region_code, var.name)
-    admin_username = "guvnor"
+  identity {
+    type = "SystemAssigned"
   }
-
-  os_profile_linux_config {
-    disable_password_authentication = true
-
-    ssh_keys {
-      key_data = data.azurerm_key_vault_secret.ssh_key.value
-      path     = "/home/guvnor/.ssh/authorized_keys"
-    }
-  }
-}
-
-resource "azurerm_virtual_machine_extension" "virtual_machine_msi" {
-  name                 = format("%s-vx-%s-%s-vm-msi", var.environment, var.azure_region_code, var.name)
-  publisher            = "Microsoft.ManagedIdentity"
-  type                 = "ManagedIdentityExtensionForLinux"
-  type_handler_version = "1.0"
-  auto_upgrade_minor_version = true
-  virtual_machine_id = azurerm_virtual_machine.virtual_machine.id
 }

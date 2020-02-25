@@ -4,11 +4,16 @@ terraform {
 }
 
 provider "azurerm" {
-    version = "=1.44.0"
+    version = ">=2.0.0"
+    features {
+        virtual_machine {
+            delete_os_disk_on_deletion = true
+        }
+    }
 }
 
 provider "azuread" {
-    version = "=0.7.0"
+    version = ">=0.7.0"
 }
 
 data "azurerm_client_config" "current" {}
