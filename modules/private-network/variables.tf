@@ -47,3 +47,10 @@ variable "log_analytics_workspace_id" {
   default = null
   description = "The ID of the Log Analytics instance to be used"
 }
+
+/*
+variable "storage_account" {
+  type = string
+  description = "Storage account to store boot diagnostics data in"
+}
+*/

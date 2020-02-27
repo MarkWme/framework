@@ -66,12 +66,12 @@ resource "azurerm_linux_virtual_machine" "virtual_machine" {
   name                             = format("%s-vl-%s-%s-vm", var.environment, var.azure_region_code, var.name)
   location                         = var.location
   resource_group_name              = var.resource_group_name
-  size                             = "Standard_DS1_v2"
-  admin_username                   = "guvnor"
+  size                             = var.vm_sku
+  admin_username                   = var.admin_username
   network_interface_ids            = [azurerm_network_interface.virtual_machine_nic.id]
 
   admin_ssh_key {
-    username = "guvnor"
+    username = var.admin_username
     public_key = data.azurerm_key_vault_secret.ssh_key.value
   }
 
@@ -83,7 +83,7 @@ resource "azurerm_linux_virtual_machine" "virtual_machine" {
   }
 
   os_disk {
-    name                 = format("%s-os-%s-%s-vm-disk0", var.environment, var.azure_region_code, var.name)
+    name                 = format("%s-md-%s-%s-vm-disk0", var.environment, var.azure_region_code, var.name)
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
@@ -91,4 +91,27 @@ resource "azurerm_linux_virtual_machine" "virtual_machine" {
   identity {
     type = "SystemAssigned"
   }
+/*
+  boot_diagnostics {
+    storage_account_uri = var.storage_account
+  }
+*/
+}
+
+resource "azurerm_managed_disk" "vm_data_disk" {
+  for_each = var.data_disks
+  name                 = format("%s-md-%s-%s-vm-disk%s", var.environment, var.azure_region_code, var.name, each.key)
+  location             = var.location
+  create_option        = "Empty"
+  disk_size_gb         = each.value
+  resource_group_name  = var.resource_group_name
+  storage_account_type = "Standard_LRS"
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "data" {
+  for_each = var.data_disks
+  virtual_machine_id = azurerm_linux_virtual_machine.virtual_machine.id
+  managed_disk_id    = azurerm_managed_disk.vm_data_disk[each.key].id
+  lun                = each.key
+  caching            = "ReadWrite"
 }

@@ -41,6 +41,7 @@ module "bastion_vm" {
   subnet_id = azurerm_subnet.bastion_vm_subnet.id
   key_vault_id = var.key_vault_id
   ssh_key_name = var.ssh_key_name
+  //storage_account = var.storage_account
 }
 
 output "firewall_private_ip_address" {

@@ -48,6 +48,7 @@ module "private_network" {
     ssh_key_name = module.core_infrastructure.ssh_key_name
     enable_diagnostics = true
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
+    //storage_account = module.core_infrastructure.storage_account_uri
 }
 
 
@@ -83,4 +84,21 @@ module "private_aks" {
     firewall_name = module.private_network.firewall_name
     firewall_private_ip_address = module.private_network.firewall_private_ip_address
     firewall_resource_group_name = module.core_infrastructure.resource_group_name
+}
+
+module "encrypted_vm" {
+  source = "./modules/linux-vm"
+  name = "encvm"
+  location = var.azure_region
+  azure_region_code = local.azure_region_code
+  environment = local.environment_code
+  resource_group_name = module.core_infrastructure.resource_group_name
+  subnet_id = module.core_infrastructure.general_subnet_id
+  key_vault_id = module.core_infrastructure.key_vault_id
+  ssh_key_name = module.core_infrastructure.ssh_key_name
+  //storage_account = module.core_infrastructure.storage_account_uri
+  data_disks = {
+      1 = 250,
+      2 = 500
+  }
 }

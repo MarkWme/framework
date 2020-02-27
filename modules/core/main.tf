@@ -35,6 +35,30 @@ resource "azurerm_log_analytics_workspace" "core-log-analytics" {
     ]
   }
 }
+/*
+
+# Temporarily removed as there seems to be a bug
+# with storage accounts in AzureRM v2
+
+resource "azurerm_storage_account" "core_storage" {
+  name                     = format("%ssa%s%s", var.environment, var.azure_region_code, var.name)
+  resource_group_name      = azurerm_resource_group.core-resource-group.name
+  location                 = var.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+
+  tags = {
+    deployed-by = "terraform"
+    timestamp = timestamp()
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags["timestamp"],
+    ]
+  }
+}
+*/
 
 module "core_virtual_network" {
   source = "../virtual-network"
@@ -45,12 +69,20 @@ module "core_virtual_network" {
   log_analytics_workspace_id = azurerm_log_analytics_workspace.core-log-analytics.id
 }
 
+resource "azurerm_subnet" "general_subnet" {
+    name = format("%s-general", module.core_virtual_network.virtual_network_name)
+    resource_group_name = azurerm_resource_group.core-resource-group.name
+    virtual_network_name = module.core_virtual_network.virtual_network_name
+    address_prefix = format("10.%s.100.0/24", var.network_id)
+}
+
 resource "azurerm_key_vault" "core-kv" {
   name = format("%s-kv-%s-%s", var.environment, var.azure_region_code, var.name)
   location = var.location
   resource_group_name = azurerm_resource_group.core-resource-group.name
   tenant_id = var.tenant_id
   sku_name = "standard"
+  enabled_for_disk_encryption = true
 
   access_policy {
     tenant_id = var.tenant_id
@@ -109,32 +141,4 @@ resource "azurerm_container_registry" "core-acr" {
       tags["timestamp"],
     ]
   }
-}
-
-output "key_vault_id" {
-  value = azurerm_key_vault.core-kv.id
-}
-
-output "resource_group_name" {
-  value = azurerm_resource_group.core-resource-group.name
-}
-
-output "azure_container_registry_name" {
-  value = azurerm_container_registry.core-acr.name
-}
-
-output "virtual_network_name" {
-  value = module.core_virtual_network.virtual_network_name
-}
-
-output "virtual_network_id" {
-  value = module.core_virtual_network.virtual_network_id
-}
-
-output "log_analytics_workspace_id" {
-  value = azurerm_log_analytics_workspace.core-log-analytics.id
-}
-
-output "ssh_key_name" {
-  value = azurerm_key_vault_secret.ssh_key.name
 }
