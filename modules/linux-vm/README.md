@@ -9,3 +9,8 @@ It creates
 - A Network Security Group that allows SSH inbound access, bound to the Network Interface
 - A Virtual Machine with a system assigned identity
 - Optional additional data disks
+
+Resources required
+- An existing Azure Resource Group
+- An existing Azure Subnet to connect the Virtual Machine to
+- An existing Azure KeyVault instance, with the SSH public key for the admin user stored there
