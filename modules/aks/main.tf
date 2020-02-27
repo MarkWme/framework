@@ -109,6 +109,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 }
 
+
 resource "azurerm_kubernetes_cluster_node_pool" "aks_windows" {
   count                 = var.enable_windows_containers ? 1:0
   name                  = "win01"
@@ -120,7 +121,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "aks_windows" {
   node_count = var.node_count
   os_type = "Windows"
   vnet_subnet_id = azurerm_subnet.aks_subnet.id
-
+  node_taints = ["os=windows:NoSchedule"]
   lifecycle {
     ignore_changes = [
       node_count # Prevent K8s autoscaling changes from being modified by Terraform
@@ -307,4 +308,24 @@ resource "kubernetes_daemonset" "kured_daemonset" {
       }
     }
   }
+}
+
+resource "kubernetes_namespace" "keda" {
+  metadata {
+    name = "keda"
+  }
+}
+
+data "helm_repository" "kedacore" {
+  name = "kedacore"
+  url  = "https://kedacore.github.io/charts"
+}
+resource "helm_release" "keda" {
+
+    name      = "keda"
+    repository = data.helm_repository.kedacore.metadata[0].name
+    chart     = "kedacore/keda"
+
+    namespace = "keda"
+    depends_on = [kubernetes_namespace.keda]
 }
