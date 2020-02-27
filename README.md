@@ -15,36 +15,38 @@ This is intended to be run from the command line and therefore uses Terraform's 
 
 [Authenticating using the Azure CLI](https://www.terraform.io/docs/providers/azurerm/guides/azure_cli.html)
 
-Terraform stores state information about the resources it creates locally. This state information is easily readable and contains secrets / passwords in clear text. A more secure way of handling this is to get Terraform to use an encrypted Azure Storage account to store the state information. This also means that the state persists, for example if you get a new laptop.
+Terraform stores state information about the resources it creates locally. This state information is easily readable and contains secrets / passwords in clear text. A more secure way of handling this is to get Terraform to use an encrypted Azure Storage account to store the state information. This also means that the state persists, for example, if you get a new laptop.
 
-For the Terraform state information, you therefore need to have pre-created the following before running any of the Terraform scripts
+For the Terraform state information, you therefore need to have pre-created an Azure Storage Account (blob) before running any of the Terraform scripts. The account will need to have the "Storage Blob Data Owner" role assigned to the account you are signed in with via the Azure CLI.
 
-- An Azure Storage Account (blob)
-- An access key for the Azure Storage Account
-
-The access key should be stored in an environment variable named `ARM_ACCESS_KEY`. It will then be automatically used by Terraform. You can use the `tf_env.sh` script file to set up this environment variable before you run Terraform.
-
-The details of the storage account need to be provided to Terraform via the `terraform` block. You'll find this at the top of the `main.tf` file in the root of this repository. The values required are as follows:
+The `backend.hcl` file should contain details of the resource group, storage account, container and blob where your state information will be stored.
 
 | Value | Description |
 | --- | --- |
+| resource_group_name | Name of the Azure Resource Group where the storage account resides |
 | storage_account_name | Name of the Azure Storage Account |
 | container_name | Name of the Blob container where the state will be stored |
 | key | Name of the Blob (file) that will hold the state information |
 
 ## Resources created
 
-The script structure aims to provide a set of Core resources that are used / shared by other Azure resources and a set of modules that can be included to deploy specific Azure resources as required.
+The root script calls a number of modules to deploy a set of core and additional resources. See the README files in the respective module folders for more details.
 
-### Core
+At a high level, the script current deploys
 
-This is the set of shared "Core" resources
+* A resource group
+* A virtual network
+* A "general purpose" subnet for various resources to be deployed into
+* An instance of Azure Key Vault
+* An instance of Azure Container Registry
+* An instance of Azure Kubernetes Service with optional Windows Container support
+* A Linux Virtual Machine with optional data disks
+* A "private" network consisting of Azure Firewall, Azure Bastion and a "jumpbox" Linux VM, each residing on a separate subnet
+* A "private" instance of Azure Kubernetes Service with no public endpoints and all traffic routed via Azure Firewall
 
-* Resource group - p-rg-euw-core
-* Virtual network - p-vn-euw-core, 10.0.0.0/16. Subnets are not created, this is left for other modules to do.
-* Azure Key Vault - p-kv-euw-core - An SSH public key is copied from your local computer to Key Vault to be used in deployments of Virtual Machines.
-* Azure Container Register - pcreuwcore
+The script is configured to mandate a naming standard, which is often helpful in demonstrating to customers how Terraform can help deploy resources that conform to their standards.
 
+I try to keep all of the variables that need to be defined in the root `terraform.tfvars` file so that it's easy to locate and change values.
 
 ### AKS
 
