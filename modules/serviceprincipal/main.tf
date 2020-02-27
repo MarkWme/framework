@@ -14,7 +14,7 @@ resource "azuread_service_principal_password" "service_principal" {
   service_principal_id = azuread_service_principal.service_principal.id
   value                = random_password.password.result
   end_date_relative    = "8760h"
-  provisioner "local-exec" {
+/*  provisioner "local-exec" {
   command = <<EOF
 until az ad sp show --id ${azuread_service_principal.service_principal.application_id}
 do
@@ -22,7 +22,7 @@ do
   sleep 3
 done
 EOF
-  }
+  }*/
 }
 
 # az ad sp list --query "[].displayName" --show-mine | grep "p-sp-westeurope-aks-private-01"
@@ -35,22 +35,6 @@ resource "azurerm_key_vault_secret" "service_principal_client_id" {
 
 resource "azurerm_key_vault_secret" "service_principal_client_secret" {
   name         = format("%s-client-secret", var.service_principal_name)
-  value        = random_password.password.result
+  value        = azuread_service_principal_password.service_principal.value
   key_vault_id = var.key_vault_id
-}
-
-output "client_id" {
-  value = azuread_service_principal.service_principal.application_id
-}
-
-output "client_secret" {
-  value = random_password.password.result
-}
-
-output "client_id_name" {
-  value = format("%s-client-id", var.service_principal_name)
-}
-
-output "client_secret_name" {
-  value = format("%s-client-secret", var.service_principal_name)
 }

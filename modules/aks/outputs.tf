@@ -9,3 +9,7 @@ output "kube_config" {
 output "subnet_id" {
   value = azurerm_subnet.aks_subnet.id
 }
+
+output "windows_admin_password" {
+  value = random_password.windows_admin_password.result
+}

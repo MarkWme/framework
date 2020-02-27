@@ -45,6 +45,12 @@ variable "aks_subnet_address_prefix" {
   description = "Address prefix to use for the AKS subnet - i.e. 10.0.1.0/24"  
 }
 
+variable "admin_username" {
+  type = string
+  default = "guvnor"
+  description = "Username for the local administrator user account"
+}
+
 variable "key_vault_id" {
   type        = string
   description = "The name of the Key Vault instance where the SSH key, Client ID and Client Secret for the AKS nodes is stored. Just the name of the vault, not the URI"
@@ -77,6 +83,12 @@ variable "enable_private_link" {
   type = bool
   default = false
   description = "Should private link be enabled?"
+}
+
+variable "enable_windows_containers" {
+  type = bool
+  default = false
+  description = "If set to true, a node pool for Windows containers will be created"
 }
 
 variable "minimum_node_count" {

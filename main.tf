@@ -54,12 +54,12 @@ module "private_network" {
     //storage_account = module.core_infrastructure.storage_account_uri
 }
 
-
 module "aks_cluster" {
     source = "./modules/aks"
     name = "aks"
     aks_subnet_address_prefix = var.networks["aks_subnet"]
     use_preview_version = true
+    enable_windows_containers = true
     location = var.azure_region
     azure_region_code = local.azure_region_code
     environment = local.environment_code
@@ -70,6 +70,7 @@ module "aks_cluster" {
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
 }
 
+/*
 module "private_aks" {
     source = "./modules/private-aks"
     name = "aks-private"
@@ -90,7 +91,7 @@ module "private_aks" {
     firewall_private_ip_address = module.private_network.firewall_private_ip_address
     firewall_resource_group_name = module.core_infrastructure.resource_group_name
 }
-
+*/
 /*
 module "linux_vm" {
   source = "./modules/linux-vm"

@@ -38,6 +38,7 @@ variable "key_vault_id" {
   type        = string
   description = "The name of the Key Vault instance where the SSH public key is stored. Just the name of the vault, not the URI"
 }
+
 variable "admin_username" {
   type = string
   default = "guvnor"

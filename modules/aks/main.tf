@@ -8,6 +8,10 @@ data "azurerm_kubernetes_service_versions" "kubernetes_version" {
   include_preview = var.use_preview_version
 }
 
+resource "random_password" "windows_admin_password" {
+  length = 16
+}
+
 module "aks_sp" {
     source = "../serviceprincipal"
     service_principal_name = format("%s-sp-%s-%s", var.environment, var.azure_region_code, var.name)
@@ -49,7 +53,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   default_node_pool {
-    name = "pool01"
+    name = "linux01"
     vm_size = "Standard_DS2_v2"
     type = "VirtualMachineScaleSets"
     enable_auto_scaling = var.enable_auto_scaling
@@ -60,11 +64,17 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   linux_profile {
-    admin_username = "guvnor"
+    admin_username = var.admin_username
     ssh_key {
       key_data = data.azurerm_key_vault_secret.ssh_key.value
     }
   }
+
+  windows_profile {
+    admin_username = var.admin_username
+    admin_password = random_password.windows_admin_password.result
+  }
+
 
   network_profile {
     load_balancer_sku = "Standard"
@@ -90,4 +100,30 @@ resource "azurerm_kubernetes_cluster" "aks" {
       default_node_pool.0.node_count # Prevent K8s autoscaling changes from being modified by Terraform
     ]
   }
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "aks_windows" {
+  count                 = var.enable_windows_containers ? 1:0
+  name                  = "win01"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  vm_size               = "Standard_DS2_v2"
+  enable_auto_scaling = var.enable_auto_scaling
+  min_count = var.minimum_node_count
+  max_count = var.maximum_node_count
+  node_count = var.node_count
+  os_type = "Windows"
+  vnet_subnet_id = azurerm_subnet.aks_subnet.id
+
+  lifecycle {
+    ignore_changes = [
+      node_count # Prevent K8s autoscaling changes from being modified by Terraform
+    ]
+  }
+}
+
+resource "azurerm_key_vault_secret" "windows_admin_password" {
+  count        = var.enable_windows_containers ? 1:0
+  name         = format("%s-windows-admin-password", azurerm_kubernetes_cluster.aks.name)
+  value        = random_password.windows_admin_password.result
+  key_vault_id = var.key_vault_id
 }
