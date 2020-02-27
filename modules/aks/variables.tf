@@ -10,11 +10,6 @@ variable "name" {
     description = "Used as part of the naming for the resources"
 }
 
-variable "instance_id" {
-    type = string
-    description = "An instance ID that is used to name resources. This should be an incremental number, i.e. 1 for the first AKS cluster, 2 for the second and so on."
-}
-
 variable "resource_group_name" {
     type = string
     default = "p-rg-euw-core"
@@ -29,6 +24,11 @@ variable "environment" {
   description = "This will be used to add a prefix to resources (d/t/p) to indicate if a resource is part of a dev, test or production environment"
 }
 
+variable "use_preview_version" {
+  type = bool
+  default = false
+  description = "If set to false, the latest GA version of Kubernetes will be deployed. If set to true, the latest preview version will be used"
+}
 variable "kubernetes_version" {
     type = string
     default = "1.15.7" # Latest GA version of Kubernetes in AKS as at 27 Jan 2020
@@ -40,10 +40,9 @@ variable "virtual_network_name" {
   description = "The name of the virtual network that AKS will be configured to use. A subnet will be created in this virtual network"
 }
 
-variable "network_id" {
+variable "aks_subnet_address_prefix" {
   type = string
-  default = "0"
-  description = "Network identifier - the second octet of the IP address - i.e. 10.x.0.0"
+  description = "Address prefix to use for the AKS subnet - i.e. 10.0.1.0/24"  
 }
 
 variable "key_vault_id" {

@@ -3,9 +3,12 @@ variable "name" {
   description = "This value will be used as part of the names of the resources being created"
 }
 
-variable "network_id" {
-  default = "0"
-  description = "This provides the second octet of the network address space used during deployments - i.e. 10.x.0.0/16"
+variable "virtual_network_address_space" {
+  description = "The address space for the core virtual network - i.e. 10.0.0.0/16"
+}
+
+variable "general_subnet_address_prefix" {
+  description = "The address prefix for the general purpose subnet - i.e. 10.0.100.0/24"
 }
 
 variable "location" {

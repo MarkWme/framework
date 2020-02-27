@@ -23,6 +23,14 @@ variable "core_network_id" {
   description = "The id of the network to peer with"
 }
 
+variable "private_aks_virtual_network_address_space" {
+  description = "The address space to be used for the virtual network"
+}
+
+variable "aks_subnet_address_prefix" {
+  description = "The address prefix to be used for the AKS subnet"
+}
+
 variable "name" {
     type = string
     default = "aks-private"

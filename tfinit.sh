@@ -2,14 +2,6 @@
 #
 # Environment variables needed for deployment
 #
-# Populate the kubernetes_version Terraform environment variable
-# with the latest available non-preview version of Kubernetes
-#
-
-
-export TF_VAR_kubernetes_version=$(az aks get-versions -l westeurope --query 'orchestrators[?isPreview == null].[orchestratorVersion] | [-1]' -o tsv)
-
-#
 # Set these to enable debug logging if required
 #
 # export TF_LOG=

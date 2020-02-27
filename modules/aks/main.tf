@@ -3,17 +3,22 @@ data "azurerm_key_vault_secret" "ssh_key" {
   key_vault_id = var.key_vault_id
 }
 
+data "azurerm_kubernetes_service_versions" "kubernetes_version" {
+  location = var.location
+  include_preview = var.use_preview_version
+}
+
 module "aks_sp" {
     source = "../serviceprincipal"
-    service_principal_name = format("%s-sp-%s-%s-%02s", var.environment, var.azure_region_code, var.name, var.instance_id)
+    service_principal_name = format("%s-sp-%s-%s", var.environment, var.azure_region_code, var.name)
     key_vault_id = var.key_vault_id
 }
 
 resource "azurerm_subnet" "aks_subnet" {
-    name = format("%s-%s-%02s", var.virtual_network_name, var.name, var.instance_id)
+    name = format("%s-sn-%s", var.virtual_network_name, var.name)
     resource_group_name = var.resource_group_name
     virtual_network_name = var.virtual_network_name
-    address_prefix = format("10.%s.%s.0/24", var.network_id, var.instance_id)
+    address_prefix = var.aks_subnet_address_prefix
 }
 
 resource "azurerm_subnet_route_table_association" "private-subnet-to-firewall" {
@@ -23,11 +28,11 @@ resource "azurerm_subnet_route_table_association" "private-subnet-to-firewall" {
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
-  name = format("%s-ks-%s-%s-%02s", var.environment, var.azure_region_code, var.name, var.instance_id)
+  name = format("%s-ks-%s-%s", var.environment, var.azure_region_code, var.name)
   location = var.location
   resource_group_name = var.resource_group_name
-  dns_prefix = format("%s-ks-%s-%s-%02s", var.environment, var.azure_region_code, var.name, var.instance_id)
-  kubernetes_version = var.kubernetes_version
+  dns_prefix = format("%s-ks-%s-%s", var.environment, var.azure_region_code, var.name)
+  kubernetes_version = data.azurerm_kubernetes_service_versions.kubernetes_version.latest_version
 
   enable_pod_security_policy = var.enable_pod_security_policy
   private_link_enabled = var.enable_private_link

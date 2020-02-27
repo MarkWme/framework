@@ -3,11 +3,6 @@ variable "name" {
   description = "This value will be used as part of the names of the resources being created"
 }
 
-variable "network_id" {
-  default = "0"
-  description = "This provides the second octet of the network address space used during deployments - i.e. 10.x.0.0/16"
-}
-
 variable "location" {
   description = "The Azure region where the resources will be deployed"
 }
@@ -26,6 +21,18 @@ variable "resource_group_name" {
 
 variable "virtual_network_name" {
   description = "The virtual network where the subnets will be created"
+}
+
+variable "firewall_subnet_address_prefix" {
+  description = "The address prefix to assign to the Firewall subnet"
+}
+
+variable "bastion_subnet_address_prefix" {
+  description = "The address prefix to assign to the Bastion Host subnet"
+}
+
+variable "jumpbox_subnet_address_prefix" {
+  description = "The address prefix to assign to the Jumpbox subnet"
 }
 
 variable "key_vault_id" {

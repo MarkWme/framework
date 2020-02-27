@@ -52,3 +52,8 @@ variable "environments" {
   }
 }
 
+variable "networks" {
+  type = map(string)
+  default = {}
+}
+

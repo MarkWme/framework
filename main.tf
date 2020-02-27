@@ -26,11 +26,12 @@ locals {
 module "core_infrastructure" {
     source = "./modules/core"
     name = var.name
-    network_id = var.network_id
     location = var.azure_region
     azure_region_code = local.azure_region_code
     environment = local.environment_code
     tenant_id = data.azurerm_client_config.current.tenant_id
+    virtual_network_address_space = var.networks["virtual_network"]
+    general_subnet_address_prefix = var.networks["general_subnet"]
     service_principal_object_id = data.azurerm_client_config.current.object_id
     ssh_file_location = var.ssh_file_location
 }
@@ -38,12 +39,14 @@ module "core_infrastructure" {
 module "private_network" {
     source = "./modules/private-network"
     name = var.name
-    network_id = var.network_id
     location = var.azure_region
     azure_region_code = local.azure_region_code
     environment = local.environment_code
     resource_group_name = module.core_infrastructure.resource_group_name
     virtual_network_name = module.core_infrastructure.virtual_network_name
+    firewall_subnet_address_prefix = var.networks["firewall_subnet"]
+    bastion_subnet_address_prefix = var.networks["bastion_subnet"]
+    jumpbox_subnet_address_prefix = var.networks["jumpbox_subnet"]
     key_vault_id = module.core_infrastructure.key_vault_id
     ssh_key_name = module.core_infrastructure.ssh_key_name
     enable_diagnostics = true
@@ -55,8 +58,8 @@ module "private_network" {
 module "aks_cluster" {
     source = "./modules/aks"
     name = "aks"
-    instance_id = "1"
-    network_id = var.network_id
+    aks_subnet_address_prefix = var.networks["aks_subnet"]
+    use_preview_version = true
     location = var.azure_region
     azure_region_code = local.azure_region_code
     environment = local.environment_code
@@ -78,6 +81,8 @@ module "private_aks" {
     core_resource_group_name = module.core_infrastructure.resource_group_name
     core_network_id = module.core_infrastructure.virtual_network_id
     core_network_name = module.core_infrastructure.virtual_network_name
+    private_aks_virtual_network_address_space = var.networks["private_aks_virtual_network"]
+    aks_subnet_address_prefix = var.networks["private_aks_subnet"]
     key_vault_id = module.core_infrastructure.key_vault_id
     ssh_key_name = module.core_infrastructure.ssh_key_name
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
@@ -86,9 +91,10 @@ module "private_aks" {
     firewall_resource_group_name = module.core_infrastructure.resource_group_name
 }
 
-module "encrypted_vm" {
+/*
+module "linux_vm" {
   source = "./modules/linux-vm"
-  name = "encvm"
+  name = "linux"
   location = var.azure_region
   azure_region_code = local.azure_region_code
   environment = local.environment_code
@@ -102,3 +108,4 @@ module "encrypted_vm" {
       2 = 500
   }
 }
+*/

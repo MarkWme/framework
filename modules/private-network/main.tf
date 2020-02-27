@@ -7,7 +7,7 @@ module "core_firewall" {
   firewall_resource_group_name = var.resource_group_name
   subnet_resource_group_name = var.resource_group_name
   virtual_network_name = var.virtual_network_name
-  address_prefix = format("10.%s.0.0/26", var.network_id)
+  address_prefix = var.firewall_subnet_address_prefix
   log_analytics_workspace_id = var.log_analytics_workspace_id
 }
 
@@ -20,7 +20,7 @@ module "core_bastion_host" {
   bastion_resource_group_name = var.resource_group_name
   subnet_resource_group_name = var.resource_group_name
   virtual_network_name = var.virtual_network_name
-  address_prefix = format("10.%s.0.64/26", var.network_id)
+  address_prefix = var.bastion_subnet_address_prefix
   log_analytics_workspace_id = var.log_analytics_workspace_id
 }
 
@@ -28,7 +28,7 @@ resource "azurerm_subnet" "bastion_vm_subnet" {
     name = format("%s-sn-jumpbox", var.virtual_network_name)
     resource_group_name = var.resource_group_name
     virtual_network_name = var.virtual_network_name
-    address_prefix = format("10.%s.0.128/26", var.network_id)
+    address_prefix = var.jumpbox_subnet_address_prefix
 }
 
 module "bastion_vm" {

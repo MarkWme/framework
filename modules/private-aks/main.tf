@@ -19,7 +19,7 @@ module "private_aks_virtual_network" {
   location = var.location
   resource_group_name = azurerm_resource_group.private_aks_resource_group.name
   network_name = format("%s-vn-%s-%s", var.environment, var.azure_region_code, var.name)
-  address_space = [format("10.%s.0.0/16",var.network_id)]
+  address_space = [var.private_aks_virtual_network_address_space]
   enable_peering = true
   peer_with_network_resource_group = var.core_resource_group_name
   peer_with_network_name = var.core_network_name
@@ -45,13 +45,12 @@ resource "azurerm_route" "route_to_firewall" {
 module "aks_private_cluster" {
     source = "../aks"
     name = "aks-private"
-    instance_id = var.instance_id
     location = var.location
-    network_id = var.network_id
     azure_region_code = var.azure_region_code
     environment = var.environment
     resource_group_name = azurerm_resource_group.private_aks_resource_group.name
     virtual_network_name = module.private_aks_virtual_network.virtual_network_name
+    aks_subnet_address_prefix = var.aks_subnet_address_prefix
     key_vault_id = var.key_vault_id
     ssh_key_name = var.ssh_key_name
     enable_private_link = true

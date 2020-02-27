@@ -65,15 +65,15 @@ module "core_virtual_network" {
   location = var.location
   resource_group_name = azurerm_resource_group.core-resource-group.name
   network_name = format("%s-vn-%s-%s", var.environment, var.azure_region_code, var.name)
-  address_space = [format("10.%s.0.0/16",var.network_id)]
+  address_space = [var.virtual_network_address_space]
   log_analytics_workspace_id = azurerm_log_analytics_workspace.core-log-analytics.id
 }
 
 resource "azurerm_subnet" "general_subnet" {
-    name = format("%s-general", module.core_virtual_network.virtual_network_name)
+    name = format("%s-sn-general", module.core_virtual_network.virtual_network_name)
     resource_group_name = azurerm_resource_group.core-resource-group.name
     virtual_network_name = module.core_virtual_network.virtual_network_name
-    address_prefix = format("10.%s.100.0/24", var.network_id)
+    address_prefix = var.general_subnet_address_prefix
 }
 
 resource "azurerm_key_vault" "core-kv" {
