@@ -58,6 +58,7 @@ module "aks_cluster" {
     source = "./modules/aks"
     name = "aks"
     aks_subnet_address_prefix = var.networks["aks_subnet"]
+    aks_agic_subnet_address_prefix = var.networks["aks_agic_subnet"]
     use_preview_version = true
     enable_windows_containers = true
     location = var.azure_region

@@ -45,6 +45,12 @@ variable "aks_subnet_address_prefix" {
   description = "Address prefix to use for the AKS subnet - i.e. 10.0.1.0/24"  
 }
 
+variable "aks_agic_subnet_address_prefix" {
+  type = string
+  default = null
+  description = "Address prefix to use for the Application Gateway Ingress Controller subnet - i.e. 10.0.2.0/24"  
+}
+
 variable "admin_username" {
   type = string
   default = "guvnor"
