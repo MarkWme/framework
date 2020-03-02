@@ -48,6 +48,7 @@ resource "azurerm_network_interface" "virtual_machine_nic" {
   name                = format("%s-ni-%s-%s-nic", var.environment, var.azure_region_code, var.name)
   location            = var.location
   resource_group_name = var.resource_group_name
+  enable_accelerated_networking = var.enable_accelerated_networking
 
   ip_configuration {
     name                          = format("%s-ip-%s-%s-vm-ip-config", var.environment, var.azure_region_code, var.name)

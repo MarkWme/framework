@@ -111,7 +111,7 @@ resource "azurerm_application_gateway" "aks_agic" {
   }
   lifecycle {
     ignore_changes = [
-      tags
+      tags, backend_http_settings, backend_address_pool, http_listener, probe, request_routing_rule
     ]
   }
 }

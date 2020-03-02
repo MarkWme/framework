@@ -29,6 +29,12 @@ variable "vm_sku" {
     description = "The SKU to be used for this virtual machine"
 }
 
+variable "enable_accelerated_networking" {
+  type = bool
+  default = false
+  description = "Set this to true to enable accelerated networking. Ensure that the VM type supports this feature before enabling."
+}
+
 variable "subnet_id" {
   type        = string
   description = "The ID of the subnet that the VM's NIC will be attached to"

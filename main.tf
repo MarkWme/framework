@@ -71,6 +71,20 @@ module "aks_cluster" {
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
 }
 
+module "benchmark_vm" {
+  source = "./modules/linux-vm"
+  name = "bench"
+  location = var.azure_region
+  azure_region_code = local.azure_region_code
+  environment = local.environment_code
+  resource_group_name = module.core_infrastructure.resource_group_name
+  subnet_id = module.core_infrastructure.general_subnet_id
+  key_vault_id = module.core_infrastructure.key_vault_id
+  ssh_key_name = module.core_infrastructure.ssh_key_name
+  vm_sku = "Standard_D8s_v3"
+  enable_accelerated_networking = true
+}
+
 /*
 module "private_aks" {
     source = "./modules/private-aks"
