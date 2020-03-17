@@ -61,7 +61,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   default_node_pool {
     name = "linux01"
-    vm_size = "Standard_D2s_v3"
+    vm_size = var.vm_sku
     type = "VirtualMachineScaleSets"
     enable_auto_scaling = var.enable_auto_scaling
     min_count = var.minimum_node_count
@@ -114,7 +114,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "aks_windows" {
   count                 = var.enable_windows_containers ? 1:0
   name                  = "win01"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
-  vm_size               = "Standard_D2s_v3"
+  vm_size               = var.vm_sku
   enable_auto_scaling = var.enable_auto_scaling
   min_count = var.minimum_node_count
   max_count = var.maximum_node_count

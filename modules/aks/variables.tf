@@ -35,6 +35,12 @@ variable "kubernetes_version" {
     description = "The version of Kubernetes to deploy"
 }
 
+variable "vm_sku" {
+    type = string
+    default = "Standard_D2s_v3"
+    description = "The SKU to be used for this virtual machine"
+}
+
 variable "virtual_network_name" {
   type = string
   description = "The name of the virtual network that AKS will be configured to use. A subnet will be created in this virtual network"

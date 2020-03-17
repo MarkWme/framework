@@ -36,6 +36,7 @@ module "core_infrastructure" {
     ssh_file_location = var.ssh_file_location
 }
 
+/*
 module "private_network" {
     source = "./modules/private-network"
     name = var.name
@@ -53,14 +54,16 @@ module "private_network" {
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
     //storage_account = module.core_infrastructure.storage_account_uri
 }
+*/
 
 module "aks_cluster" {
     source = "./modules/aks"
     name = "aks"
+    vm_sku = "Standard_D2s_v3"
     aks_subnet_address_prefix = var.networks["aks_subnet"]
     aks_agic_subnet_address_prefix = var.networks["aks_agic_subnet"]
     use_preview_version = true
-    enable_windows_containers = true
+    enable_windows_containers = false
     location = var.azure_region
     azure_region_code = local.azure_region_code
     environment = local.environment_code
@@ -71,6 +74,7 @@ module "aks_cluster" {
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
 }
 
+/*
 module "benchmark_vm" {
   source = "./modules/linux-vm"
   name = "bench"
@@ -84,6 +88,7 @@ module "benchmark_vm" {
   vm_sku = "Standard_D8s_v3"
   enable_accelerated_networking = true
 }
+*/
 
 /*
 module "private_aks" {
