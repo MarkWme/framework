@@ -91,6 +91,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     docker_bridge_cidr = "172.17.0.1/16"
   }
 
+  identity {
+    type = "SystemAssigned"
+  }
+
   service_principal {
     client_id     = module.aks_sp.client_id
     client_secret = module.aks_sp.client_secret

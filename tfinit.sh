@@ -11,7 +11,7 @@
 # state will be held. Use the az command specified to retrieve
 # the access key. 
 #
-# export ARM_ACCESS_KEY=az storage account keys list -n psaeuwshared --query '[0].value' -o tsv 
+export ARM_ACCESS_KEY=$(az storage account keys list -n psaeuwshared --query '[0].value' -o tsv)
 
 #
 # If using Azure AD to authenticate against the backend, use this
