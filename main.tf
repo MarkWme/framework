@@ -63,7 +63,28 @@ module "aks_cluster" {
     aks_subnet_address_prefix = var.networks["aks_subnet"]
     aks_agic_subnet_address_prefix = var.networks["aks_agic_subnet"]
     use_preview_version = true
-    enable_windows_containers = false
+    enable_windows_containers = true
+    enable_agic = true
+    enable_kured = true
+    enable_keda = true
+    location = var.azure_region
+    azure_region_code = local.azure_region_code
+    environment = local.environment_code
+    resource_group_name = module.core_infrastructure.resource_group_name
+    virtual_network_name = module.core_infrastructure.virtual_network_name
+    key_vault_id = module.core_infrastructure.key_vault_id
+    ssh_key_name = module.core_infrastructure.ssh_key_name
+    log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
+}
+
+module "aks_cluster_1_15_10" {
+    source = "./modules/aks"
+    name = "aks11510"
+    vm_sku = "Standard_D2s_v3"
+    aks_subnet_address_prefix = "10.0.3.0/24"
+    use_preview_version = false
+    kubernetes_version_prefix = "1.15"
+    enable_windows_containers = true
     location = var.azure_region
     azure_region_code = local.azure_region_code
     environment = local.environment_code

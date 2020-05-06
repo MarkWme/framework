@@ -9,6 +9,7 @@ locals {
 }
 
 resource "azurerm_subnet" "agic_subnet" {
+  count = var.enable_agic ? 1 : 0
   name                 = format("%s-sn-%s-agic", var.virtual_network_name, var.name)
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.virtual_network_name
@@ -16,6 +17,7 @@ resource "azurerm_subnet" "agic_subnet" {
 }
 
 resource "azurerm_public_ip" "agic_public_ip" {
+  count = var.enable_agic ? 1 : 0
   name                = format("%s-ip-%s-%s-agic-ip", var.environment, var.azure_region_code, var.name)
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -24,6 +26,7 @@ resource "azurerm_public_ip" "agic_public_ip" {
 }
 
 resource "azurerm_application_gateway" "aks_agic" {
+  count = var.enable_agic ? 1 : 0
   name                = format("%s-ag-%s-%s", var.environment, var.azure_region_code, var.name)
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -39,7 +42,7 @@ resource "azurerm_application_gateway" "aks_agic" {
 
   gateway_ip_configuration {
     name      = format("%s-ag-%s-%s-ip-configuration", var.environment, var.azure_region_code, var.name)
-    subnet_id = azurerm_subnet.agic_subnet.id
+    subnet_id = azurerm_subnet.agic_subnet[0].id
   }
 
   frontend_port {
@@ -49,7 +52,7 @@ resource "azurerm_application_gateway" "aks_agic" {
 
   frontend_ip_configuration {
     name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = azurerm_public_ip.agic_public_ip.id
+    public_ip_address_id = azurerm_public_ip.agic_public_ip[0].id
   }
 
   backend_address_pool {

@@ -31,7 +31,13 @@ variable "use_preview_version" {
 }
 variable "kubernetes_version" {
     type = string
-    default = "1.15.7" # Latest GA version of Kubernetes in AKS as at 27 Jan 2020
+    default = "1.16.7" # Latest GA version of Kubernetes in AKS as at 6th May 2020
+    description = "The version of Kubernetes to deploy"
+}
+
+variable "kubernetes_version_prefix" {
+    type = string
+    default = null # Latest GA version of Kubernetes in AKS as at 6th May 2020
     description = "The version of Kubernetes to deploy"
 }
 
@@ -49,6 +55,24 @@ variable "virtual_network_name" {
 variable "aks_subnet_address_prefix" {
   type = string
   description = "Address prefix to use for the AKS subnet - i.e. 10.0.1.0/24"  
+}
+
+variable "enable_kured" {
+  type = bool
+  default = false
+  description = "Enable kured"
+}
+
+variable "enable_keda" {
+  type = bool
+  default = false
+  description = "Enable KEDA"
+}
+
+variable "enable_agic" {
+  type = bool
+  default = false
+  description = "Enable Application Gateway Ingress Controller"
 }
 
 variable "aks_agic_subnet_address_prefix" {
