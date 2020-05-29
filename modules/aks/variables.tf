@@ -159,3 +159,10 @@ variable "route_table_id" {
   default = null
   description = "ID of the Route Table to assign to this subnet"
 }
+
+
+variable "network_policy" {
+  type = string
+  default = null
+  description = "Which network policy type to use. Valid options are azure or calico"
+}
