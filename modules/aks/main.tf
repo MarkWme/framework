@@ -20,15 +20,9 @@ resource "random_password" "windows_admin_password" {
   length = 16
 }
 
-module "aks_sp" {
-    source = "../serviceprincipal"
-    service_principal_name = format("%s-sp-%s-%s", var.environment, var.azure_region_code, var.name)
-    key_vault_id = var.key_vault_id
-}
-
 resource "azurerm_subnet" "aks_subnet" {
     name = format("%s-sn-%s", var.virtual_network_name, var.name)
-    resource_group_name = var.resource_group_name
+    resource_group_name = var.core_resource_group_name
     virtual_network_name = var.virtual_network_name
     address_prefix = var.aks_subnet_address_prefix
 }
@@ -47,7 +41,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   kubernetes_version = data.azurerm_kubernetes_service_versions.kubernetes_version.latest_version
 
   enable_pod_security_policy = var.enable_pod_security_policy
-  private_link_enabled = var.enable_private_link
+  private_cluster_enabled = var.enable_private_link
 
   role_based_access_control {
     enabled = var.enable_rbac
@@ -95,11 +89,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   identity {
     type = "SystemAssigned"
-  }
-
-  service_principal {
-    client_id     = module.aks_sp.client_id
-    client_secret = module.aks_sp.client_secret
   }
 
   tags = {

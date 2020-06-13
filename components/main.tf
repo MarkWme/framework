@@ -33,6 +33,22 @@ locals {
     environment_code = var.environments[var.environment]
 }
 
+resource "azurerm_resource_group" "resource_group" {
+  name     = format("%s-rg-%s-%s", local.environment_code, local.azure_region_code, var.name)
+  location = var.azure_region
+   tags = {
+    deployed-by = "terraform"
+    timestamp = timestamp()
+    description = "Resource group for core network, firewall and shared services"
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags["timestamp"],
+    ]
+  }
+}
+
 /*
 module "private_network" {
     source = "../modules/private-network"
@@ -67,7 +83,8 @@ module "aks_cluster" {
     location = var.azure_region
     azure_region_code = local.azure_region_code
     environment = local.environment_code
-    resource_group_name = var.core_resource_group_name
+    resource_group_name = azurerm_resource_group.resource_group.name
+    core_resource_group_name = var.core_resource_group_name
     virtual_network_name = var.core_virtual_network_name
     key_vault_id = data.azurerm_key_vault.core.id
     ssh_key_name = var.core_ssh_key_name

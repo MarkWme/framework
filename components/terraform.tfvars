@@ -1,7 +1,6 @@
-name = "core"
+name = "resources"
 azure_region = "westeurope"
 environment = "production"
-ssh_file_location = "/home/mark/.ssh/id_rsa.pub"
 core_resource_group_name = "p-rg-euw-core"
 core_key_vault_name = "p-kv-euw-core"
 core_virtual_network_name = "p-vn-euw-core"

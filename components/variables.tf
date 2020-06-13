@@ -1,6 +1,6 @@
 variable "name" {
     type = string
-    default     = "coredev"
+    default     = "res"
     description = "This will be used as part of the resource names"
 }
 

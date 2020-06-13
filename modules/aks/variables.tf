@@ -12,8 +12,14 @@ variable "name" {
 
 variable "resource_group_name" {
     type = string
-    default = "p-rg-euw-core"
+    default = "p-rg-euw-resources"
     description = "The resource group where the AKS cluster will be deployed"
+}
+
+variable "core_resource_group_name" {
+    type = string
+    default = "p-rg-euw-core"
+    description = "The resource group where the core resources are deployed"
 }
 
 variable "azure_region_code" {
