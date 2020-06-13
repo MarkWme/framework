@@ -148,6 +148,12 @@ variable "log_analytics_workspace_id" {
   description = "ID of the Log Analytics Workspace to connect to"
 }
 
+variable "enable_log_analytics" {
+  type = bool
+  default = false
+  description = "Set this to true if a route table needs to be assigned to the subnet"
+}
+
 variable "enable_route_table" {
   type = bool
   default = false

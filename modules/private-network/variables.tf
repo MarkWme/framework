@@ -46,7 +46,7 @@ variable "ssh_key_name" {
 }
 
 variable "enable_diagnostics" {
-    default = true
+    default = false
     description = "Enables logging of virtual network diagnostic data to Log Analytics"
 }
 

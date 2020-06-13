@@ -63,8 +63,8 @@ module "aks_cluster" {
     aks_subnet_address_prefix = var.networks["aks_subnet"]
     aks_agic_subnet_address_prefix = var.networks["aks_agic_subnet"]
     use_preview_version = true
-    enable_windows_containers = true
-    enable_agic = true
+    enable_windows_containers = false
+    enable_agic = false
     enable_kured = true
     enable_keda = false
     location = var.azure_region
@@ -74,6 +74,7 @@ module "aks_cluster" {
     virtual_network_name = module.core_infrastructure.virtual_network_name
     key_vault_id = module.core_infrastructure.key_vault_id
     ssh_key_name = module.core_infrastructure.ssh_key_name
+    enable_log_analytics = false
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
 }
 

@@ -39,7 +39,7 @@ variable "virtual_network_name" {
 }
 
 variable "enable_diagnostics" {
-    default = true
+    default = false
     description = "Enables logging of Bastion Host diagnostic data to Log Analytics"
 }
 

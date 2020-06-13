@@ -38,7 +38,7 @@ variable "peer_with_network_id" {
 }
 
 variable "enable_diagnostics" {
-    default = true
+    default = false
     description = "Enables logging of virtual network diagnostic data to Log Analytics"
 }
 
