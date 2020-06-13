@@ -4,7 +4,7 @@
 
 # Based on the weaveworks/kured template here: https://github.com/weaveworks/kured/releases/download/1.2.0/kured-1.2.0-dockerhub.yaml
 # More info: https://github.com/weaveworks/kured
-
+/*
 resource "kubernetes_service_account" "kured_service_account" {
   count = var.enable_kured ? 1:0
   provider = kubernetes
@@ -177,3 +177,5 @@ resource "kubernetes_daemonset" "kured_daemonset" {
     }
   }
 }
+
+*/

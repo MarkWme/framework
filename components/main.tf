@@ -23,19 +23,6 @@ locals {
     environment_code = var.environments[var.environment]
 }
 
-module "core_infrastructure" {
-    source = "./modules/core"
-    name = var.name
-    location = var.azure_region
-    azure_region_code = local.azure_region_code
-    environment = local.environment_code
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    virtual_network_address_space = var.networks["virtual_network"]
-    general_subnet_address_prefix = var.networks["general_subnet"]
-    service_principal_object_id = data.azurerm_client_config.current.object_id
-    ssh_file_location = var.ssh_file_location
-}
-
 /*
 module "private_network" {
     source = "./modules/private-network"
@@ -74,7 +61,7 @@ module "aks_cluster" {
     virtual_network_name = module.core_infrastructure.virtual_network_name
     key_vault_id = module.core_infrastructure.key_vault_id
     ssh_key_name = module.core_infrastructure.ssh_key_name
-    enable_log_analytics = false
+    enable_log_analytics = true
     log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
 }
 

@@ -1,3 +1,4 @@
+/*
 resource "kubernetes_namespace" "keda" {
   count = var.enable_keda ? 1:0
   metadata {
@@ -20,3 +21,4 @@ resource "helm_release" "keda" {
     namespace = "keda"
     depends_on = [kubernetes_namespace.keda]
 }
+*/
