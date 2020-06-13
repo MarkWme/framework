@@ -18,6 +18,16 @@ provider "azuread" {
 
 data "azurerm_client_config" "current" {}
 
+data "azurerm_key_vault" "core" {
+    name = var.core_key_vault_name
+    resource_group_name = var.core_resource_group_name
+}
+
+data "azurerm_log_analytics_workspace" "core" {
+    name = var.core_log_analytics_workspace_name
+    resource_group_name = var.core_resource_group_name
+}
+
 locals {
     azure_region_code = var.azure_regions[var.azure_region]
     environment_code = var.environments[var.environment]
@@ -25,7 +35,7 @@ locals {
 
 /*
 module "private_network" {
-    source = "./modules/private-network"
+    source = "../modules/private-network"
     name = var.name
     location = var.azure_region
     azure_region_code = local.azure_region_code
@@ -44,7 +54,7 @@ module "private_network" {
 */
 
 module "aks_cluster" {
-    source = "./modules/aks"
+    source = "../modules/aks"
     name = "aks"
     vm_sku = "Standard_D2s_v3"
     aks_subnet_address_prefix = var.networks["aks_subnet"]
@@ -57,17 +67,17 @@ module "aks_cluster" {
     location = var.azure_region
     azure_region_code = local.azure_region_code
     environment = local.environment_code
-    resource_group_name = module.core_infrastructure.resource_group_name
-    virtual_network_name = module.core_infrastructure.virtual_network_name
-    key_vault_id = module.core_infrastructure.key_vault_id
-    ssh_key_name = module.core_infrastructure.ssh_key_name
+    resource_group_name = var.core_resource_group_name
+    virtual_network_name = var.core_virtual_network_name
+    key_vault_id = data.azurerm_key_vault.core.id
+    ssh_key_name = var.core_ssh_key_name
     enable_log_analytics = true
-    log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
+    log_analytics_workspace_id = data.azurerm_log_analytics_workspace.core.id
 }
 
 /*
 module "aks_cluster_calico" {
-    source = "./modules/aks"
+    source = "../modules/aks"
     name = "akscalico"
     vm_sku = "Standard_D2s_v3"
     aks_subnet_address_prefix = "10.0.3.0/24"
@@ -86,7 +96,7 @@ module "aks_cluster_calico" {
 
 /*
 module "aks_cluster_1_15_10" {
-    source = "./modules/aks"
+    source = "../modules/aks"
     name = "aks11510"
     vm_sku = "Standard_D2s_v3"
     aks_subnet_address_prefix = "10.0.3.0/24"
@@ -106,7 +116,7 @@ module "aks_cluster_1_15_10" {
 
 /*
 module "benchmark_vm" {
-  source = "./modules/linux-vm"
+  source = "../modules/linux-vm"
   name = "bench"
   location = var.azure_region
   azure_region_code = local.azure_region_code
@@ -122,7 +132,7 @@ module "benchmark_vm" {
 
 /*
 module "private_aks" {
-    source = "./modules/private-aks"
+    source = "../modules/private-aks"
     name = "aks-private"
     instance_id = "1"
     network_id = var.aks_private_network_id
@@ -144,7 +154,7 @@ module "private_aks" {
 */
 /*
 module "linux_vm" {
-  source = "./modules/linux-vm"
+  source = "../modules/linux-vm"
   name = "linux"
   location = var.azure_region
   azure_region_code = local.azure_region_code

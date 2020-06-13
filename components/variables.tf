@@ -4,16 +4,34 @@ variable "name" {
     description = "This will be used as part of the resource names"
 }
 
-variable "network_id" {
+variable "core_resource_group_name" {
     type = string
-    default     = "100"
-    description = "Defines the second octet of the network to be used - i.e. 10.x.0.0/16"
+    default     = null
+    description = "Resource group where core components are deployed"
 }
 
-variable "aks_private_network_id" {
+variable "core_key_vault_name" {
     type = string
-    default     = "101"
-    description = "Defines the second octet of the network to be used - i.e. 10.x.0.0/16"
+    default     = null
+    description = "Resource group where Azure Key Vault is deployed"
+}
+
+variable "core_virtual_network_name" {
+    type = string
+    default     = null
+    description = "Resource group where Azure Key Vault is deployed"
+}
+
+variable "core_log_analytics_workspace_name" {
+    type = string
+    default     = null
+    description = "Resource group where Azure Key Vault is deployed"
+}
+
+variable "core_ssh_key_name" {
+    type = string
+    default     = null
+    description = "Resource group where Azure Key Vault is deployed"
 }
 
 variable "azure_region" {
@@ -26,12 +44,6 @@ variable "environment" {
     type = string
     default = "development"
     description = "This will be used to add a prefix to resources (d/t/p) to indicate if a resource is part of a dev, test or production environment"
-}
-
-variable "ssh_file_location" {
-    type = string
-    default = "/home/mark/.ssh/id_rsa.pub"
-    description = "Locatin of your public SSH key file. This will be uploaded to Key Vault."
 }
 
 variable "azure_regions" {
