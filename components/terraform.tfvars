@@ -1,6 +1,6 @@
-name = "resources"
+name = "res"
 azure_region = "westeurope"
-environment = "production"
+environment = "development"
 core_resource_group_name = "p-rg-euw-core"
 core_key_vault_name = "p-kv-euw-core"
 core_virtual_network_name = "p-vn-euw-core"
