@@ -22,8 +22,8 @@ resource "azurerm_log_analytics_workspace" "core-log-analytics" {
   name                = format("%s-la-%s-%s", var.environment, var.azure_region_code, var.name)
   location            = var.location
   resource_group_name = azurerm_resource_group.core-resource-group.name
-  sku                 = "Standalone"
-  retention_in_days   = 30
+  sku                 = "Free"
+  retention_in_days   = 7
   tags = {
     deployed-by = "terraform"
     timestamp = timestamp()
