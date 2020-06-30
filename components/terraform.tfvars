@@ -4,6 +4,7 @@ environment = "development"
 core_resource_group_name = "p-rg-euw-core"
 core_key_vault_name = "p-kv-euw-core"
 core_virtual_network_name = "p-vn-euw-core"
+core_general_subnet_name = "p-vn-euw-core-sn-general"
 core_ssh_key_name = "ssh-public-key"
 core_log_analytics_workspace_name = "p-la-euw-core"
 networks = {

@@ -19,7 +19,13 @@ variable "core_key_vault_name" {
 variable "core_virtual_network_name" {
     type = string
     default     = null
-    description = "Resource group where Azure Key Vault is deployed"
+    description = "Core virtual network"
+}
+
+variable "core_general_subnet_name" {
+    type = string
+    default     = null
+    description = "Subnet for general purpose use"
 }
 
 variable "core_log_analytics_workspace_name" {

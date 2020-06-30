@@ -28,6 +28,12 @@ data "azurerm_log_analytics_workspace" "core" {
     resource_group_name = var.core_resource_group_name
 }
 
+data "azurerm_subnet" "general" {
+  name                 = var.core_general_subnet_name
+  virtual_network_name = var.core_virtual_network_name
+  resource_group_name  = var.core_resource_group_name
+}
+
 locals {
     azure_region_code = var.azure_regions[var.azure_region]
     environment_code = var.environments[var.environment]
@@ -90,6 +96,20 @@ module "aks_cluster" {
     ssh_key_name = var.core_ssh_key_name
     enable_log_analytics = true
     log_analytics_workspace_id = data.azurerm_log_analytics_workspace.core.id
+}
+
+module "dev_vm" {
+  source = "../modules/linux-vm"
+  name = "dev"
+  location = var.azure_region
+  azure_region_code = local.azure_region_code
+  environment = local.environment_code
+  resource_group_name = azurerm_resource_group.resource_group.name
+  subnet_id = data.azurerm_subnet.general.id
+  key_vault_id = data.azurerm_key_vault.core.id
+  ssh_key_name = var.core_ssh_key_name
+  vm_sku = "Standard_D8s_v3"
+  enable_accelerated_networking = true
 }
 
 /*
