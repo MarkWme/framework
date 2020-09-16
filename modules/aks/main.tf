@@ -24,7 +24,7 @@ resource "azurerm_subnet" "aks_subnet" {
     name = format("%s-sn-%s", var.virtual_network_name, var.name)
     resource_group_name = var.core_resource_group_name
     virtual_network_name = var.virtual_network_name
-    address_prefix = var.aks_subnet_address_prefix
+    address_prefixes = [var.aks_subnet_address_prefix]
 }
 
 resource "azurerm_subnet_route_table_association" "private-subnet-to-firewall" {
@@ -92,7 +92,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   tags = {
-    deployed-by = "terraform"
+    deployed-by = format("terraform [%s]", terraform.workspace)
     timestamp = timestamp()
   }
 

@@ -39,6 +39,7 @@ variable "azure_regions" {
   default = {
     westeurope  = "euw"
     northeurope = "eun"
+    uksouth = "uks"
   }
 }
 

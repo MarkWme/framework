@@ -13,7 +13,7 @@ resource "azurerm_subnet" "agic_subnet" {
   name                 = format("%s-sn-%s-agic", var.virtual_network_name, var.name)
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.virtual_network_name
-  address_prefix       = var.aks_agic_subnet_address_prefix
+  address_prefixes     = [var.aks_agic_subnet_address_prefix]
 }
 
 resource "azurerm_public_ip" "agic_public_ip" {

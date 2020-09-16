@@ -73,7 +73,7 @@ resource "azurerm_subnet" "general_subnet" {
     name = format("%s-sn-general", module.core_virtual_network.virtual_network_name)
     resource_group_name = azurerm_resource_group.core-resource-group.name
     virtual_network_name = module.core_virtual_network.virtual_network_name
-    address_prefix = var.general_subnet_address_prefix
+    address_prefixes = [var.general_subnet_address_prefix]
 }
 
 resource "azurerm_key_vault" "core-kv" {

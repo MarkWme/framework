@@ -75,6 +75,7 @@ module "private_network" {
 }
 */
 
+
 module "aks_cluster" {
     source = "../modules/aks"
     name = "aks"
@@ -86,6 +87,9 @@ module "aks_cluster" {
     enable_agic = false
     enable_kured = true
     enable_keda = false
+    enable_auto_scaling = false
+    maximum_node_count = null
+    minimum_node_count = null
     location = var.azure_region
     azure_region_code = local.azure_region_code
     environment = local.environment_code
