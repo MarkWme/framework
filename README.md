@@ -30,6 +30,20 @@ The `backend.hcl` file should contain details of the resource group, storage acc
 
 ## Resources created
 
+The scripts are intended to be used in conjunction with Terraform workspaces. This allows individual components to be created, modified and deleted more easily and with less risk of causing impact to other resources. It also allows for modules to be reused more easily by simply specifying a new workspace and a new set of input variables.
+
+## Core resources
+
+The core resources are a set of central resources that can be used by other resources in the subscriptions. It creates a hub network with some resources as well as spoke networks which are then configured to allow communication between each other using VNet peering.
+
+To add new core resources, such as a new spoke network, do that in the **core** folder by modifying the ```main.tf``` and ```terraform.tfvars``` files.
+
+Go to the **core** folder and set the workspace to **core**.
+
+## General resources
+
+General resources are created from the **deployments** folder. Create a new resource by providing an updated ```.tfvars``` file and then, optionally, creating a new workspace. The new workspace will help to keep things clean, in so far as you can easily create, update and destroy individual resources by simply switching to the appropriate workspace, specifying the name of the appropriate ```.tfvars``` file and then running the required ```terraform``` commands.
+
 The root script calls a number of modules to deploy a set of core and additional resources. See the README files in the respective module folders for more details.
 
 At a high level, the script current deploys

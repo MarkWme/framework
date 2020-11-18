@@ -36,6 +36,20 @@ module "core_infrastructure" {
     ssh_file_location = var.ssh_file_location
 }
 
+module "west_europe_spoke" {
+    source = "../modules/spoke"
+    name = "spoke"
+    location = "westeurope"
+    azure_region_code = "euw"
+    environment = local.environment_code
+    virtual_network_address_space = var.networks["virtual_network_west_europe"]
+    general_subnet_address_prefix = var.networks["general_subnet_west_europe"]
+    hub_virtual_network_name = module.core_infrastructure.virtual_network_name
+    hub_virtual_network_id = module.core_infrastructure.virtual_network_id
+    hub_virtual_network_resource_group = module.core_infrastructure.resource_group_name
+    log_analytics_workspace_id = module.core_infrastructure.log_analytics_workspace_id
+}
+
 module "uk_south_spoke" {
     source = "../modules/spoke"
     name = "spoke"
