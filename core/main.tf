@@ -4,7 +4,6 @@ terraform {
 }
 
 provider "azurerm" {
-    version = ">=2.0.0"
     features {
         virtual_machine {
             delete_os_disk_on_deletion = true
@@ -13,7 +12,6 @@ provider "azurerm" {
 }
 
 provider "azuread" {
-    version = ">=0.7.0"
 }
 
 data "azurerm_client_config" "current" {}

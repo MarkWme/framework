@@ -4,7 +4,6 @@ terraform {
 }
 
 provider "azurerm" {
-    version = ">=2.0.0"
     features {
         virtual_machine {
             delete_os_disk_on_deletion = true
@@ -102,6 +101,7 @@ module "aks_cluster" {
     log_analytics_workspace_id = data.azurerm_log_analytics_workspace.core.id
 }
 
+
 module "dev_vm" {
   source = "../modules/linux-vm"
   name = "dev"
@@ -115,6 +115,7 @@ module "dev_vm" {
   vm_sku = "Standard_D8s_v3"
   enable_accelerated_networking = true
 }
+
 
 /*
 module "aks_cluster_calico" {
