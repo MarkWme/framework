@@ -2,7 +2,7 @@
 
 This repo contains a set of [Terraform](https://www.terraform.io/) scripts and modules that I use to quickly spin-up resources in my Azure subscription.
 
-In my day job, I often need to deploy Azure resources so that I can work on building out proof of concept and demo environments. I created this repo to provide the following
+I often need to deploy Azure resources so that I can work on building out proof of concept and demo environments. I created this repo to provide the following
 
 - A base set of resources that are frequently used across a number of Azure services.
 - Modules that allow me to quickly deploy instances of Azure resources and any necessary dependencies for those resources, such as service principals.
@@ -27,6 +27,17 @@ The `backend.hcl` file should contain details of the resource group, storage acc
 | storage_account_name | Name of the Azure Storage Account |
 | container_name | Name of the Blob container where the state will be stored |
 | key | Name of the Blob (file) that will hold the state information |
+
+## Terraform workspaces
+
+components
+core
+
+## Resource deployment
+
+```
+terraform plan -var-file=aks-westeurope-01.tfvars
+```
 
 ## Resources created
 
